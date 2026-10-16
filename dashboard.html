@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKV SACCO — Subscribe</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D1B2A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root{ --navy:#0D1B2A; --navy-2:#13293D; --teal:#1B6CA8; --teal-2:#22C7A9; --gold:#F5A623; --paper:#F4F7FC; --muted:#6B7C93; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;color:#1E2A3A;}
+  .app-shell{display:flex;min-height:100vh;}
+  .sidebar{width:230px;background:linear-gradient(180deg,var(--navy),var(--navy-2));color:#fff;flex-shrink:0;
+    display:flex;flex-direction:column;padding:20px 14px;position:fixed;top:0;bottom:0;left:0;z-index:500;
+    transition:transform .25s ease;overflow-y:auto;}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(13,27,42,.55);z-index:400;}
+  .sidebar-backdrop.show{display:block;}
+  .hamburger-btn{display:none;background:#fff;border:1px solid #E3E9F2;border-radius:9px;width:38px;height:38px;
+    align-items:center;justify-content:center;font-size:16px;color:var(--navy);}
+  .sidebar .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding:0 6px;}
+  .sidebar .brand .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--teal-2),var(--teal));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;letter-spacing:-.5px;color:#fff;}
+  .sidebar .brand span{font-size:13.5px;font-weight:700;line-height:1.2;}
+  .nav-link{color:#B9C7DA;padding:10px 12px;border-radius:9px;font-size:13.5px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:2px;}
+  .nav-link:hover{background:rgba(255,255,255,.06);color:#fff;}
+  .nav-link.active{background:var(--teal-2);color:#fff;font-weight:600;}
+  .nav-sep{font-size:10.5px;text-transform:uppercase;color:#6E84A3;margin:14px 6px 6px;letter-spacing:.5px;}
+  .main{margin-left:230px;flex:1;padding:22px 26px 60px;width:calc(100% - 230px);}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+  .topbar h2{font-size:19px;margin:0;color:var(--navy);}
+  .topbar p{margin:0;font-size:12.5px;color:var(--muted);}
+  .sync-chip{font-size:11.5px;background:#fff;border:1px solid #E3E9F2;padding:6px 12px;border-radius:20px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+  .sync-chip.online{color:#0C7A5E;} .sync-chip.offline{color:#B3261E;}
+  .card-panel{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 2px 10px rgba(20,40,70,.06);margin-bottom:18px;}
+  .kpi{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(20,40,70,.06);}
+  .kpi .val{font-size:22px;font-weight:700;color:var(--navy);}
+  .kpi .lbl{font-size:11.5px;color:var(--muted);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-size:11px;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:2px solid #EEF2F8;}
+  td{padding:9px 10px;border-bottom:1px solid #F1F4F9;vertical-align:middle;}
+  .btn-teal{background:var(--teal-2);border-color:var(--teal-2);color:#fff;}
+  .btn-teal:hover{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .btn-gold{background:var(--gold);border-color:var(--gold);color:#fff;}
+  .badge-role{background:#EAF6F3;color:#0C7A5E;font-size:10.5px;padding:3px 8px;border-radius:20px;margin:2px 3px 0 0;display:inline-block;}
+  .badge-active{background:#E7F8F3;color:#0C7A5E;font-size:10.5px;padding:3px 10px;border-radius:20px;}
+  .badge-suspended{background:#FDECEC;color:#B3261E;font-size:10.5px;padding:3px 10px;border-radius:20px;}
+  .view{display:none;} .view.active{display:block;}
+  .toast-box{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;}
+  .toast-msg{background:var(--navy);color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:320px;}
+  .toast-msg.err{background:#B3261E;}
+  .toast-msg.ok{background:#0C7A5E;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(13,27,42,.55);display:none;align-items:center;justify-content:center;z-index:200;padding:16px;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:#fff;border-radius:16px;padding:22px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;}
+  .modal-box h3{font-size:15px;margin:0 0 14px;color:var(--navy);}
+  .role-check{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;}
+  #installLinkBox{font-size:12.5px;word-break:break-all;background:var(--paper);padding:10px 12px;border-radius:8px;}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+  @media(max-width:900px){
+    .sidebar{transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);}
+    .main{margin-left:0;width:100%;padding:16px 16px 60px;}
+    .hamburger-btn{display:flex;}
+  }
+  .actions-menu{
+    display:none; position:fixed; z-index:900; background:#fff;
+    border:1px solid #E3E9F2; border-radius:9px; box-shadow:0 10px 26px rgba(13,27,42,.14);
+    min-width:150px; padding:6px; text-align:left;
+  }
+  .actions-menu.show{ display:block; }
+  .actions-menu button{
+    display:flex; align-items:center; gap:8px; width:100%; border:none; background:none;
+    padding:8px 10px; border-radius:6px; font-size:13px; color:#1E2A3A; cursor:pointer; text-align:left;
+  }
+  .actions-menu button:hover{ background:#F4F7FC; }
+  .actions-menu button.danger{ color:#B3261E; }
+  .actions-menu button.danger:hover{ background:#FDECEC; }
+  @media(max-width:560px){
+    .topbar{align-items:flex-start;}
+    .topbar > div:last-child{width:100%;justify-content:flex-start;}
+    table{font-size:12px;}
+    th, td{padding:7px 8px;white-space:nowrap;}
+    .card-panel, .kpi{padding:14px;}
+    .modal-box{padding:18px;}
+  }
+</style>
+</head>
+<body>
+<div id="root" style="display:none;">
+  <div class="app-shell">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+    <div class="sidebar" id="sidebarEl">
+      <div class="brand"><div class="mark" id="brandMark">OKV</div><img id="brandLogoImg" style="display:none;width:34px;height:34px;border-radius:9px;object-fit:cover;" alt="Logo"><span><span class="brand-name">OKV SACCO</span><br><small style="font-weight:400;color:#9FB2CC;">Subscribe</small></span></div>
+      <div class="nav-link active" data-view="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</div>
+      <div class="nav-link" data-view="members"><i class="bi bi-people"></i> Members</div>
+      <div class="nav-link" data-view="contributions"><i class="bi bi-piggy-bank"></i> Contributions</div>
+      <div class="nav-link" data-view="loans"><i class="bi bi-cash-coin"></i> Loans</div>
+      <div class="nav-link" data-view="repayments"><i class="bi bi-receipt"></i> Repayments</div>
+      <div class="nav-link" data-view="dividends"><i class="bi bi-graph-up-arrow"></i> Dividends</div>
+      <div class="nav-link" data-view="communicate" id="navCommunicate" style="display:none;"><i class="bi bi-megaphone"></i> Communicate</div>
+      <div class="nav-link" data-view="statements" id="navStatements" style="display:none;"><i class="bi bi-file-earmark-text"></i> Statements</div>
+      <div class="nav-link" data-view="reports"><i class="bi bi-bar-chart-line"></i> Reports</div>
+      <div class="nav-sep">Resources</div>
+      <div class="nav-link" data-view="manual"><i class="bi bi-book"></i> User Manual</div>
+      <div class="nav-sep" id="adminSep" style="display:none;">Admin</div>
+      <div class="nav-link" data-view="settings" id="navSettings" style="display:none;"><i class="bi bi-building-gear"></i> Organization Settings</div>
+      <div class="nav-link" data-view="users" id="navUsers" style="display:none;"><i class="bi bi-person-badge"></i> Users</div>
+      <div class="nav-link" data-view="backup" id="navBackup" style="display:none;"><i class="bi bi-cloud-arrow-down"></i> Backup</div>
+      <div class="nav-link" data-view="installlink" id="navInstallLink" style="display:none;"><i class="bi bi-share"></i> Install Link</div>
+      <div class="nav-link" data-view="subscription" id="navSubscription" style="display:none;"><i class="bi bi-credit-card"></i> Subscription</div>
+      <div class="nav-sep">Account</div>
+      <div class="nav-link" data-view="account"><i class="bi bi-gear"></i> My Account</div>
+      <div class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Sign Out</div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="d-flex align-items-center gap-2">
+          <button class="hamburger-btn" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+          <div><h2 id="viewTitle">Dashboard</h2><p id="viewSub">Overview of your organization</p></div>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="sync-chip" id="syncChip"><i class="bi bi-arrow-repeat"></i> <span id="syncText">Checking…</span></span>
+          <button class="btn btn-outline-secondary btn-sm" onclick="syncNow(true)"><i class="bi bi-arrow-repeat"></i> Sync Now</button>
+          <span class="position-relative" id="upgradeWrap" style="display:none;">
+            <button class="btn btn-outline-secondary btn-sm" onclick="goToSubscription()" title="Upgrade plan">
+              <i class="bi bi-arrow-up-circle"></i> Upgrade
+            </button>
+          </span>
+          <span class="position-relative" id="bellWrap" style="display:none;">
+            <button class="btn btn-outline-secondary btn-sm" onclick="goToSubscription()" title="Subscription status">
+              <i class="bi bi-bell"></i>
+            </button>
+            <span id="bellDot" style="display:none;position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#B3261E;border:2px solid #fff;"></span>
+          </span>
+          <span class="small text-muted" id="whoami"></span>
+        </div>
+      </div>
+
+      <!-- ================= DASHBOARD ================= -->
+      <section id="view-dashboard" class="view active">
+        <div class="card-panel mb-3" id="trialBanner" style="display:none;background:linear-gradient(120deg,var(--teal),var(--teal-2));color:#fff;">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              <div class="fw-bold" id="trialBannerTitle"><i class="bi bi-stars"></i> Free Trial</div>
+              <div class="small" id="trialBannerText" style="opacity:.9;"></div>
+            </div>
+            <button class="btn btn-light btn-sm fw-semibold" onclick="goToSubscription()">View Plans &amp; Upgrade</button>
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-6 col-md-3"><div class="kpi"><div class="val" id="kpiMembers">0</div><div class="lbl">Members</div></div></div>
+          <div class="col-6 col-md-3"><div class="kpi"><div class="val" id="kpiContrib">0</div><div class="lbl">Contributions</div></div></div>
+          <div class="col-6 col-md-3"><div class="kpi"><div class="val" id="kpiLoans">0</div><div class="lbl">Loans</div></div></div>
+          <div class="col-6 col-md-3"><div class="kpi"><div class="val" id="kpiDividends">0</div><div class="lbl">Dividends Paid</div></div></div>
+        </div>
+        <div class="row g-3 mt-1">
+          <div class="col-md-6"><div class="card-panel"><h3 class="h6 mb-2">Savings &amp; Shares — Last 6 Months</h3><canvas id="chartContrib" height="180"></canvas></div></div>
+          <div class="col-md-6"><div class="card-panel"><h3 class="h6 mb-2">Loans Disbursed vs. Repaid — Last 6 Months</h3><canvas id="chartLoans" height="180"></canvas></div></div>
+        </div>
+        <div class="row g-3 mt-1">
+          <div class="col-md-6"><div class="card-panel"><h3 class="h6 mb-2">Membership Growth</h3><canvas id="chartMembers" height="180"></canvas></div></div>
+          <div class="col-md-6"><div class="card-panel"><h3 class="h6 mb-2">Member Status Breakdown</h3><canvas id="chartStatus" height="180"></canvas></div></div>
+        </div>
+        <div class="card-panel mt-3">
+          <p class="text-muted small mb-0"><i class="bi bi-info-circle text-primary"></i> <span id="scopeNote">You are seeing all records for your organization.</span> Charts refresh automatically every time new data syncs in.</p>
+        </div>
+      </section>
+
+      <!-- ================= MEMBERS ================= -->
+      <section id="view-members" class="view">
+        <div class="topbar"><div><h2>Members</h2><p>Member register</p></div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary" onclick="exportCsv('members')"><i class="bi bi-download"></i> Export CSV</button>
+            <button class="btn btn-outline-secondary" onclick="openImportModal('members')"><i class="bi bi-upload"></i> Import CSV</button>
+            <button class="btn btn-teal" onclick="openRecordModal('members')"><i class="bi bi-plus-lg"></i> Add Member</button>
+          </div></div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-8"><div class="row g-3 h-100">
+            <div class="col-4"><div class="kpi"><div class="val" id="regMembersTotal">0</div><div class="lbl">Total</div></div></div>
+            <div class="col-4"><div class="kpi"><div class="val" id="regMembersActive">0</div><div class="lbl">Active</div></div></div>
+            <div class="col-4"><div class="kpi"><div class="val" id="regMembersOther">0</div><div class="lbl">Inactive / Pending</div></div></div>
+          </div></div>
+          <div class="col-md-4"><div class="card-panel h-100 mb-0"><canvas id="regChartMembers" height="90"></canvas></div></div>
+        </div>
+        <div class="card-panel"><div class="table-scroll"><table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Status</th><th>Joined</th><th></th></tr></thead><tbody id="tbl-members"></tbody></table></div></div>
+      </section>
+
+      <!-- ================= CONTRIBUTIONS ================= -->
+      <section id="view-contributions" class="view">
+        <div class="topbar"><div><h2>Contributions</h2><p>Savings &amp; shares register</p></div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary" onclick="exportCsv('contributions')"><i class="bi bi-download"></i> Export CSV</button>
+            <button class="btn btn-outline-secondary" onclick="openImportModal('contributions')"><i class="bi bi-upload"></i> Import CSV</button>
+            <button class="btn btn-teal" onclick="openRecordModal('contributions')"><i class="bi bi-plus-lg"></i> Add Contribution</button>
+          </div></div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-8"><div class="row g-3 h-100">
+            <div class="col-6"><div class="kpi"><div class="val" id="regContribSavings">0</div><div class="lbl">Total Savings</div></div></div>
+            <div class="col-6"><div class="kpi"><div class="val" id="regContribShares">0</div><div class="lbl">Total Shares</div></div></div>
+          </div></div>
+          <div class="col-md-4"><div class="card-panel h-100 mb-0"><canvas id="regChartContrib" height="90"></canvas></div></div>
+        </div>
+        <div class="card-panel"><div class="table-scroll"><table><thead><tr><th>Txn</th><th>Member ID</th><th>Date</th><th>Savings</th><th>Shares</th><th></th></tr></thead><tbody id="tbl-contributions"></tbody></table></div></div>
+      </section>
+
+      <!-- ================= LOANS ================= -->
+      <section id="view-loans" class="view">
+        <div class="topbar"><div><h2>Loans</h2><p>Loan disbursement register</p></div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary" onclick="exportCsv('loans')"><i class="bi bi-download"></i> Export CSV</button>
+            <button class="btn btn-outline-secondary" onclick="openImportModal('loans')"><i class="bi bi-upload"></i> Import CSV</button>
+            <button class="btn btn-gold" onclick="openRecordModal('loans')"><i class="bi bi-plus-lg"></i> Add Loan</button>
+          </div></div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-8"><div class="row g-3 h-100">
+            <div class="col-6"><div class="kpi"><div class="val" id="regLoansCount">0</div><div class="lbl">Active Loans</div></div></div>
+            <div class="col-6"><div class="kpi"><div class="val" id="regLoansTotal">0</div><div class="lbl">Total Disbursed</div></div></div>
+          </div></div>
+          <div class="col-md-4"><div class="card-panel h-100 mb-0"><canvas id="regChartLoans" height="90"></canvas></div></div>
+        </div>
+        <div class="card-panel"><div class="table-scroll"><table><thead><tr><th>Loan ID</th><th>Member ID</th><th>Amount</th><th>Rate</th><th>Term</th><th></th></tr></thead><tbody id="tbl-loans"></tbody></table></div></div>
+      </section>
+
+      <!-- ================= REPAYMENTS ================= -->
+      <section id="view-repayments" class="view">
+        <div class="topbar"><div><h2>Repayments</h2><p>Loan repayments register</p></div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary" onclick="exportCsv('repayments')"><i class="bi bi-download"></i> Export CSV</button>
+            <button class="btn btn-outline-secondary" onclick="openImportModal('repayments')"><i class="bi bi-upload"></i> Import CSV</button>
+            <button class="btn btn-teal" onclick="openRecordModal('repayments')"><i class="bi bi-plus-lg"></i> Add Repayment</button>
+          </div></div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-8"><div class="row g-3 h-100">
+            <div class="col-6"><div class="kpi"><div class="val" id="regRepayCount">0</div><div class="lbl">Repayments Recorded</div></div></div>
+            <div class="col-6"><div class="kpi"><div class="val" id="regRepayTotal">0</div><div class="lbl">Total Repaid</div></div></div>
+          </div></div>
+          <div class="col-md-4"><div class="card-panel h-100 mb-0"><canvas id="regChartRepay" height="90"></canvas></div></div>
+        </div>
+        <div class="card-panel"><div class="table-scroll"><table><thead><tr><th>Receipt</th><th>Loan ID</th><th>Date</th><th>Amount</th><th></th></tr></thead><tbody id="tbl-repayments"></tbody></table></div></div>
+      </section>
+
+      <!-- ================= DIVIDENDS ================= -->
+      <section id="view-dividends" class="view">
+        <div class="topbar"><div><h2>Dividends</h2><p>Dividends &amp; payouts register</p></div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary" onclick="exportCsv('dividends')"><i class="bi bi-download"></i> Export CSV</button>
+            <button class="btn btn-outline-secondary" onclick="openImportModal('dividends')"><i class="bi bi-upload"></i> Import CSV</button>
+            <button class="btn btn-gold" onclick="openRecordModal('dividends')"><i class="bi bi-plus-lg"></i> Add Dividend</button>
+          </div></div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-8"><div class="row g-3 h-100">
+            <div class="col-6"><div class="kpi"><div class="val" id="regDivCount">0</div><div class="lbl">Payouts Recorded</div></div></div>
+            <div class="col-6"><div class="kpi"><div class="val" id="regDivYears">0</div><div class="lbl">Years Covered</div></div></div>
+          </div></div>
+          <div class="col-md-4"><div class="card-panel h-100 mb-0"><canvas id="regChartDiv" height="90"></canvas></div></div>
+        </div>
+        <div class="card-panel"><div class="table-scroll"><table><thead><tr><th>Div ID</th><th>Member ID</th><th>Year</th><th>Rate</th><th>Paid</th><th></th></tr></thead><tbody id="tbl-dividends"></tbody></table></div></div>
+      </section>
+
+      <!-- ================= COMMUNICATE ================= -->
+      <section id="view-communicate" class="view">
+        <div class="topbar"><div><h2>Communicate</h2><p>Send announcements to members or your team</p></div></div>
+        <div class="card-panel" style="max-width:640px;">
+          <p class="small text-muted"><i class="bi bi-info-circle text-primary"></i> Use <code>{name}</code> and <code>{memberId}</code> in your message and each member gets it personalized. Only channels a member has an email/phone on file for will actually receive it.</p>
+          <div class="mb-2"><label class="small fw-semibold">Recipients</label>
+            <select class="form-select" id="msgRecipientMode" onchange="toggleRecipientPicker()">
+              <option value="all">All Members</option>
+              <option value="pick">Choose specific members</option>
+            </select>
+          </div>
+          <div class="mb-2" id="msgMemberPicker" style="display:none;max-height:160px;overflow-y:auto;border:1px solid #E3E9F2;border-radius:9px;padding:8px;"></div>
+          <div class="mb-2"><label class="small fw-semibold">Channels</label>
+            <div class="d-flex gap-3">
+              <label class="d-flex align-items-center gap-1 small"><input type="checkbox" id="chEmail" checked> Email</label>
+              <label class="d-flex align-items-center gap-1 small"><input type="checkbox" id="chSms"> SMS</label>
+              <label class="d-flex align-items-center gap-1 small"><input type="checkbox" id="chWhatsapp"> WhatsApp</label>
+            </div>
+            <div class="small text-muted mt-1">SMS/WhatsApp need a provider key configured by your Admin in the backend — Email always works.</div>
+          </div>
+          <div class="mb-2"><label class="small fw-semibold">Subject (for email)</label><input type="text" class="form-control" id="msgSubject" placeholder="e.g. Your July statement is ready"></div>
+          <div class="mb-3"><label class="small fw-semibold">Message</label><textarea class="form-control" id="msgBody" rows="5" placeholder="Dear {name}, ..."></textarea></div>
+          <button class="btn btn-teal" onclick="sendCommunication()"><i class="bi bi-send"></i> Send</button>
+        </div>
+        <div class="card-panel" style="max-width:640px;">
+          <h3 class="h6 mb-2"><i class="bi bi-people-fill text-primary"></i> Message Your Team</h3>
+          <p class="small text-muted">Reach your own staff — not members — by Email, SMS or WhatsApp, individually or all at once.</p>
+          <div class="mb-2"><label class="small fw-semibold">Recipients</label>
+            <select class="form-select" id="teamRecipientMode" onchange="toggleTeamPicker()">
+              <option value="all">All Team Members</option>
+              <option value="pick">Choose specific people</option>
+            </select>
+          </div>
+          <div class="mb-2" id="teamMemberPicker" style="display:none;max-height:160px;overflow-y:auto;border:1px solid #E3E9F2;border-radius:9px;padding:8px;"></div>
+          <div class="mb-2"><label class="small fw-semibold">Channels</label>
+            <div class="d-flex gap-3">
+              <label class="d-flex align-items-center gap-1 small"><input type="checkbox" id="teamChEmail" checked> Email</label>
+              <label class="d-flex align-items-center gap-1 small"><input type="checkbox" id="teamChSms"> SMS</label>
+              <label class="d-flex align-items-center gap-1 small"><input type="checkbox" id="teamChWhatsapp"> WhatsApp</label>
+            </div>
+          </div>
+          <div class="mb-2"><label class="small fw-semibold">Subject (for email)</label><input type="text" class="form-control" id="teamMsgSubject" placeholder="e.g. Team meeting tomorrow"></div>
+          <div class="mb-3"><label class="small fw-semibold">Message</label><textarea class="form-control" id="teamMsgBody" rows="4" placeholder="Dear {name}, ..."></textarea></div>
+          <button class="btn btn-teal" onclick="sendTeamMessage()"><i class="bi bi-send"></i> Send to Team</button>
+        </div>
+        <div class="card-panel" style="max-width:640px;">
+          <h3 class="h6 mb-2">Recently Sent</h3>
+          <div class="table-scroll"><table><thead><tr><th>Subject</th><th>Channels</th><th>Recipients</th><th>Sent</th><th>Date</th></tr></thead><tbody id="tbl-messages"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ================= STATEMENTS (Admin/Manager/Membership/Finance) ================= -->
+      <section id="view-statements" class="view">
+        <div class="topbar"><div><h2>Statements</h2><p>View, print, download or send member statements</p></div></div>
+        <div class="card-panel" style="max-width:680px;">
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="small fw-semibold">Member</label>
+              <select class="form-select" id="stmtRecipientMode2" onchange="toggleStatementPicker2()">
+                <option value="individual">One Member</option>
+                <option value="all">All Members</option>
+              </select>
+            </div>
+            <div class="col-6" id="stmtIndividualPicker2">
+              <label class="small fw-semibold">&nbsp;</label>
+              <select class="form-select" id="stmtMemberSelect2"></select>
+            </div>
+          </div>
+          <div class="mb-2"><label class="small fw-semibold">Period</label>
+            <select class="form-select" id="stmtPeriod" onchange="applyStatementPeriod()">
+              <option value="month">This Month</option>
+              <option value="quarter">This Quarter</option>
+              <option value="half">This Half-Year</option>
+              <option value="year">This Year</option>
+              <option value="custom">Custom Range</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+          <div class="row g-2 mb-3" id="stmtCustomRange" style="display:none;">
+            <div class="col-6"><label class="small fw-semibold">From</label><input type="date" class="form-control" id="stmtFrom2"></div>
+            <div class="col-6"><label class="small fw-semibold">To</label><input type="date" class="form-control" id="stmtTo2"></div>
+          </div>
+          <div class="d-flex gap-2 flex-wrap mb-2">
+            <button class="btn btn-outline-secondary" onclick="viewStatements()"><i class="bi bi-eye"></i> View</button>
+            <button class="btn btn-outline-secondary" onclick="printStatements()"><i class="bi bi-printer"></i> Print</button>
+            <button class="btn btn-outline-secondary" onclick="downloadStatementsCsv()"><i class="bi bi-download"></i> Download CSV</button>
+          </div>
+          <hr>
+          <p class="small fw-semibold mb-1">Send via channels</p>
+          <div class="d-flex gap-3 mb-2">
+            <label class="d-flex align-items-center gap-1 small"><input type="checkbox" id="stmtChEmail" checked> Email</label>
+            <label class="d-flex align-items-center gap-1 small"><input type="checkbox" id="stmtChSms"> SMS</label>
+            <label class="d-flex align-items-center gap-1 small"><input type="checkbox" id="stmtChWhatsapp"> WhatsApp</label>
+          </div>
+          <button class="btn btn-teal" id="stmtSendBtn" onclick="sendStatements()"><i class="bi bi-envelope-paper"></i> Send Statement(s)</button>
+        </div>
+        <div class="card-panel" id="stmtPreviewCard" style="display:none;">
+          <h3 class="h6 mb-2">Preview</h3>
+          <div id="stmtPreview"></div>
+        </div>
+      </section>
+
+      <!-- ================= REPORTS ================= -->
+      <section id="view-reports" class="view">
+        <div class="topbar"><div><h2>Reports</h2><p>Your activity, summarized by period</p></div></div>
+        <div class="card-panel" style="max-width:520px;">
+          <label class="small fw-semibold">Period</label>
+          <select class="form-select mb-3" id="reportPeriod" onchange="renderReports()">
+            <option value="day">Daily (Today)</option>
+            <option value="week">Weekly (Last 7 Days)</option>
+            <option value="month" selected>Monthly (This Month)</option>
+            <option value="quarter">Quarterly (This Quarter)</option>
+            <option value="year">Yearly (This Year)</option>
+          </select>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" onclick="printReport()"><i class="bi bi-printer"></i> Print</button>
+            <button class="btn btn-outline-secondary" onclick="downloadReportCsv()"><i class="bi bi-download"></i> Download CSV</button>
+          </div>
+        </div>
+        <div class="card-panel" id="reportCard">
+          <div id="reportSummary" class="row g-3 mb-3"></div>
+          <canvas id="reportChart" height="90"></canvas>
+        </div>
+      </section>
+
+      <!-- ================= ORGANIZATION SETTINGS (Admin only) ================= -->
+      <section id="view-settings" class="view">
+        <div class="topbar"><div><h2>Organization Settings</h2><p>Your logo, name and contact details, shown across the system</p></div></div>
+        <div class="card-panel" style="max-width:520px;">
+          <p class="small text-muted">This information appears on member statements and can personalize your sidebar. It's separate from your account username/password.</p>
+          <div class="mb-2"><label class="small fw-semibold">Organization Display Name</label><input type="text" class="form-control" id="orgDisplayName" placeholder="e.g. Unity Cooperative Society"></div>
+          <div class="mb-2"><label class="small fw-semibold">Logo URL</label><input type="url" class="form-control" id="orgLogoUrl" placeholder="https://..."></div>
+          <div class="mb-2"><label class="small fw-semibold">Address</label><input type="text" class="form-control" id="orgAddress" placeholder="e.g. 12 Unity Road, Lagos"></div>
+          <div class="row g-2 mb-2">
+            <div class="col-6"><label class="small fw-semibold">Phone</label><input type="text" class="form-control" id="orgPhone"></div>
+            <div class="col-6"><label class="small fw-semibold">Email</label><input type="email" class="form-control" id="orgEmail"></div>
+          </div>
+          <div class="mb-3"><label class="small fw-semibold">Currency Symbol</label><input type="text" class="form-control" id="orgCurrency" placeholder="₦" style="max-width:100px;"></div>
+          <button class="btn btn-teal" onclick="saveOrgSettings()"><i class="bi bi-check-lg"></i> Save</button>
+        </div>
+      </section>
+
+      <!-- ================= BACKUP (Admin only) ================= -->
+      <section id="view-backup" class="view">
+        <div class="topbar"><div><h2>Backup</h2><p>Download or restore your organization's full data</p></div></div>
+        <div class="card-panel" style="max-width:600px;">
+          <h3 class="h6 mb-2"><i class="bi bi-cloud-arrow-down text-primary"></i> Download a Full Backup</h3>
+          <p class="small text-muted">Downloads every Member, Contribution, Loan, Repayment and Dividend record in one file. Keep it somewhere safe — it can fully restore your data if needed.</p>
+          <div class="d-flex gap-2">
+            <button class="btn btn-teal" onclick="downloadFullBackupJson()"><i class="bi bi-filetype-json"></i> Download JSON Backup</button>
+            <button class="btn btn-outline-secondary" onclick="downloadFullBackupCsvZip()"><i class="bi bi-filetype-csv"></i> Download All as CSV</button>
+          </div>
+        </div>
+        <div class="card-panel" style="max-width:600px;">
+          <h3 class="h6 mb-2"><i class="bi bi-cloud-arrow-up text-primary"></i> Restore From a JSON Backup</h3>
+          <p class="small text-muted"><b>Restoring adds records</b> from the backup file into your organization — it does not erase anything currently there. Existing records with the same ID are updated; new ones are added.</p>
+          <input type="file" class="form-control mb-2" id="restoreFile" accept="application/json">
+          <button class="btn btn-outline-secondary" onclick="restoreFromBackupJson()"><i class="bi bi-arrow-repeat"></i> Restore</button>
+        </div>
+      </section>
+
+      <!-- ================= USER MANUAL ================= -->
+      <section id="view-manual" class="view">
+        <div class="topbar"><div><h2>User Manual</h2><p>Guides for your plan and your role</p></div></div>
+        <p class="small text-muted mb-2" id="manualRoleNote"></p>
+        <div class="card-panel"><div class="row g-3" id="manualGrid"></div></div>
+      </section>
+
+      <!-- ================= USERS (Admin only) ================= -->
+      <section id="view-users" class="view">
+        <div class="topbar"><div><h2>Users</h2><p>Everyone with access to your organization</p></div>
+          <button class="btn btn-teal" onclick="openAddUserModal()"><i class="bi bi-person-plus"></i> Add User</button></div>
+        <div class="card-panel"><div class="table-scroll"><table><thead><tr><th>Username</th><th>Email</th><th>Roles</th><th>Status</th><th></th></tr></thead><tbody id="tbl-users"></tbody></table></div></div>
+      </section>
+
+      <!-- ================= INSTALL LINK (Admin only) ================= -->
+      <section id="view-installlink" class="view">
+        <div class="topbar"><div><h2>Install Link</h2><p>Share this with your team so they can install the app</p></div></div>
+        <div class="card-panel">
+          <p class="small text-muted">Anyone who opens this link sees only the installation screen with device-specific instructions. After installing, it takes them straight to the Sign In screen — give them their username and password separately.</p>
+          <div id="installLinkBox" class="mb-2" style="word-break:break-all;font-family:monospace;background:#F4F7FC;padding:10px 12px;border-radius:8px;"></div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-teal" id="shareInstallBtn" onclick="shareInstallLink()"><i class="bi bi-share"></i> Share</button>
+            <button class="btn btn-outline-secondary" onclick="copyInstallLink()"><i class="bi bi-clipboard"></i> Copy Link</button>
+            <a class="btn btn-outline-secondary" id="waShareLink" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+            <a class="btn btn-outline-secondary" id="emailShareLink"><i class="bi bi-envelope"></i> Email</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SUBSCRIPTION (Admin only) ================= -->
+      <section id="view-subscription" class="view">
+        <div class="topbar"><div><h2>Subscription</h2><p>Your organization's plan &amp; renewal</p></div></div>
+        <div class="card-panel" style="max-width:520px;">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div id="subStatusBadge" class="badge-active" style="font-size:13px;padding:6px 14px;">Active</div>
+            <div>
+              <div class="fw-semibold" id="subPlanLine">—</div>
+              <div class="fw-semibold" id="subExpiryLine">—</div>
+              <div class="small text-muted" id="subDaysLine">—</div>
+            </div>
+          </div>
+          <div id="subWarningBox" class="alert alert-warning small" style="display:none;"></div>
+          <a class="btn btn-teal" href="pricing.html"><i class="bi bi-arrow-up-circle"></i> View Plans &amp; Upgrade</a>
+        </div>
+        <div class="card-panel" style="max-width:560px;">
+          <h3 class="h6 mb-2">Upgrade / Renew — Bank Transfer</h3>
+          <div class="alert alert-light border small">
+            <b>Instructions:</b> 1) Transfer the amount for your chosen plan to the account below. 2) Fill in the form and upload your payment screenshot. 3) Submit — we're notified immediately and you'll get an email on your status within the hour. Once confirmed, your plan updates automatically on this dashboard.
+          </div>
+          <div class="border rounded-3 p-3 mb-3" style="background:var(--paper);">
+            <div class="small"><b>Account Number:</b> <span id="bankAccNo"></span></div>
+            <div class="small"><b>Bank:</b> <span id="bankName"></span></div>
+            <div class="small"><b>Account Name:</b> <span id="bankAccName"></span></div>
+          </div>
+          <div class="mb-2"><label class="small fw-semibold">Organization / Business Name</label><input type="text" class="form-control" id="payOrgName"></div>
+          <div class="mb-2"><label class="small fw-semibold">Full Name</label><input type="text" class="form-control" id="payFullName"></div>
+          <div class="mb-2"><label class="small fw-semibold">Email</label><input type="email" class="form-control" id="payEmail"></div>
+          <div class="mb-2"><label class="small fw-semibold">Phone</label><input type="text" class="form-control" id="payPhone"></div>
+          <div class="mb-2"><label class="small fw-semibold">Plan / Tier</label>
+            <select class="form-select" id="payPlan" onchange="updatePayAmount()"></select>
+          </div>
+          <div class="mb-2"><label class="small fw-semibold">Amount</label><input type="text" class="form-control" id="payAmount" readonly></div>
+          <div class="mb-3"><label class="small fw-semibold">Upload Payment Screenshot</label><input type="file" class="form-control" id="payProof" accept="image/*"></div>
+          <button class="btn btn-teal" onclick="submitPayment()" id="paySubmitBtn"><i class="bi bi-send-check"></i> Submit for Confirmation</button>
+        </div>
+        <div class="card-panel" style="max-width:560px;">
+          <h3 class="h6 mb-2">Need help instead?</h3>
+          <div class="small mb-1"><i class="bi bi-hash text-primary"></i> Quote your Organization ID: <code id="subOrgId"></code></div>
+          <div class="small mb-1"><i class="bi bi-whatsapp text-primary"></i> WhatsApp: <span id="subWhatsapp"></span></div>
+          <div class="small mb-1"><i class="bi bi-telephone text-primary"></i> Phone: <span id="subPhone"></span></div>
+          <div class="small mb-1"><i class="bi bi-envelope text-primary"></i> Email: <span id="subEmail"></span></div>
+          <div class="small"><i class="bi bi-globe text-primary"></i> Website: <span id="subWebsite"></span></div>
+        </div>
+      </section>
+
+      <!-- ================= MY ACCOUNT ================= -->
+      <section id="view-account" class="view">
+        <div class="topbar"><div><h2>My Account</h2><p>Your sign-in details</p></div></div>
+        <div class="card-panel" style="max-width:420px;">
+          <p class="small text-muted mb-3" id="accountInfo"></p>
+          <h3 class="h6 mb-3">Change Password</h3>
+          <div class="mb-2"><label class="small fw-semibold">Current Password</label><input type="password" class="form-control" id="curPass"></div>
+          <div class="mb-2"><label class="small fw-semibold">New Password</label><input type="password" class="form-control" id="newPass" minlength="6"></div>
+          <div class="mb-3"><label class="small fw-semibold">Confirm New Password</label><input type="password" class="form-control" id="confPass" minlength="6"></div>
+          <button class="btn btn-teal" onclick="changeOwnPassword()"><i class="bi bi-key"></i> Update Password</button>
+        </div>
+        <p class="small text-muted"><a href="privacy-policy.html" target="_blank">Privacy Policy</a> · <a href="terms-of-service.html" target="_blank">Terms of Service</a> · <a href="refund-policy.html" target="_blank">Refund Policy</a></p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="toast-box" id="toastBox"></div>
+<div class="actions-menu" id="sharedActionsMenu"></div>
+
+<!-- Generic record add/edit modal -->
+<div class="modal-overlay" id="recordModalOverlay">
+  <div class="modal-box">
+    <h3 id="recordModalTitle">Add Record</h3>
+    <div id="recordModalFields"></div>
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn btn-secondary flex-fill" onclick="closeRecordModal()">Cancel</button>
+      <button class="btn btn-teal flex-fill" onclick="saveRecordModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CSV import modal -->
+<div class="modal-overlay" id="importModalOverlay">
+  <div class="modal-box">
+    <h3 id="importModalTitle">Import CSV</h3>
+    <p class="small text-muted" id="importInstructions"></p>
+    <p class="small"><a href="#" id="importTemplateLink" onclick="downloadImportTemplate();return false;"><i class="bi bi-download"></i> Download a template CSV to fill in</a></p>
+    <input type="file" class="form-control mb-2" id="importFile" accept=".csv">
+    <div class="small text-muted mb-2" id="importPreviewNote"></div>
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn btn-secondary flex-fill" onclick="closeImportModal()">Cancel</button>
+      <button class="btn btn-teal flex-fill" onclick="runCsvImport()">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add / edit roles user modal -->
+<div class="modal-overlay" id="userModalOverlay">
+  <div class="modal-box">
+    <h3 id="userModalTitle">Add User</h3>
+    <label class="small fw-semibold">Username</label><input type="text" class="form-control mb-2" id="umUsername">
+    <label class="small fw-semibold">Email</label><input type="email" class="form-control mb-2" id="umEmail">
+    <label class="small fw-semibold">Full Name</label><input type="text" class="form-control mb-2" id="umFullName">
+    <label class="small fw-semibold">Phone</label><input type="text" class="form-control mb-2" id="umPhone">
+    <div class="mb-2" id="userModalPasswordField">
+      <label class="small fw-semibold">Temporary Password</label><input type="password" class="form-control mb-2" id="umPassword">
+    </div>
+    <label class="small fw-semibold">Roles</label>
+    <div id="umRoles"></div>
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn btn-secondary flex-fill" onclick="closeUserModal()">Cancel</button>
+      <button class="btn btn-teal flex-fill" onclick="saveUserModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Set password (admin -> user) modal -->
+<div class="modal-overlay" id="setPassOverlay">
+  <div class="modal-box">
+    <h3>Set User Password</h3>
+    <p class="small text-muted">This immediately replaces the password for <b id="setPassUsername"></b>. Share it with them directly.</p>
+    <input type="password" class="form-control mb-3" id="setPassValue" placeholder="New password" minlength="6">
+    <div class="d-flex gap-2">
+      <button class="btn btn-secondary flex-fill" onclick="closeSetPassModal()">Cancel</button>
+      <button class="btn btn-teal flex-fill" onclick="saveSetPassModal()">Set Password</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="db.js"></script>
+<script>
+const ROLES = ["SACCO Super Admin","SACCO Manager / General Manager","Membership Officer",
+  "Savings / Contributions Officer","Loan Officer","Repayment / Cashier Officer",
+  "Accountant / Finance Officer","Auditor / Supervisor"];
+
+/* field schema per register — used for both table rendering and the add/edit modal */
+const SCHEMAS = {
+  members: { prefix:"MBR", label:"Member", fields:[
+    {key:"name", label:"Full Name", type:"text", required:true},
+    {key:"phone", label:"Phone", type:"text"},
+    {key:"email", label:"Email", type:"email"},
+    {key:"status", label:"Status", type:"select", options:["Active","Inactive","Pending"]},
+    {key:"joinDate", label:"Join Date", type:"date"}
+  ]},
+  contributions: { prefix:"TXN", label:"Contribution", fields:[
+    {key:"memberId", label:"Member ID", type:"text", required:true, help:"e.g. MBR-A1B2C3"},
+    {key:"date", label:"Date", type:"date"},
+    {key:"savings", label:"Savings Amount", type:"number"},
+    {key:"shares", label:"Shares Amount", type:"number"},
+    {key:"method", label:"Method", type:"select", options:["Cash","Bank Transfer","POS","Mobile Money"]},
+    {key:"ref", label:"Reference", type:"text"}
+  ]},
+  loans: { prefix:"LN", label:"Loan", fields:[
+    {key:"memberId", label:"Member ID", type:"text", required:true},
+    {key:"amount", label:"Amount", type:"number", required:true},
+    {key:"disbDate", label:"Disbursement Date", type:"date"},
+    {key:"rate", label:"Annual Rate (%)", type:"number"},
+    {key:"term", label:"Term (months)", type:"number"},
+    {key:"purpose", label:"Purpose", type:"text"}
+  ]},
+  repayments: { prefix:"RCP", label:"Repayment", fields:[
+    {key:"loanId", label:"Loan ID", type:"text", required:true, help:"e.g. LN-A1B2C3"},
+    {key:"date", label:"Date", type:"date"},
+    {key:"amount", label:"Amount", type:"number", required:true},
+    {key:"method", label:"Method", type:"select", options:["Cash","Bank Transfer","POS","Mobile Money"]},
+    {key:"ref", label:"Reference", type:"text"}
+  ]},
+  dividends: { prefix:"DIV", label:"Dividend", fields:[
+    {key:"memberId", label:"Member ID", type:"text", required:true},
+    {key:"year", label:"Year", type:"number"},
+    {key:"sharesHeld", label:"Shares Held", type:"number"},
+    {key:"rate", label:"Rate (%)", type:"number"},
+    {key:"paymentDate", label:"Payment Date", type:"date"},
+    {key:"method", label:"Method", type:"select", options:["Cash","Bank Transfer","POS","Mobile Money"]}
+  ]}
+};
+
+let ORG_PROFILE = {}; // declared up-front, defensively — boot() reads this via renderTable/fmtN
+let session = null;
+let editingStore = null, editingId = null;
+/* actual column count per register table (data columns + trailing action column) —
+   used for the "No records yet" empty-state colspan so it always matches */
+const REGISTER_COLUMN_COUNT = { members:6, contributions:6, loans:6, repayments:5, dividends:6 };
+
+/* ---------- boot ---------- */
+async function boot(){
+  session = await loadSession();
+  if(!session || session.cleared){ window.location.replace("login.html"); return; }
+  if(session.isSuperAdmin){ window.location.replace("super-admin.html"); return; }
+  if(navigator.onLine){ await loadPlatformSettings(); } // ensures Subscription tab shows the latest contact/bank details
+  applyBranding();
+  await openLocalDB();
+  document.getElementById("root").style.display = "";
+  document.getElementById("whoami").textContent = session.username + (session.isAdmin ? " (Admin)" : "");
+  document.getElementById("accountInfo").innerHTML = `Signed in as <b>${session.username}</b><br>Organization ID: <code>${session.orgId}</code>`;
+  document.getElementById("scopeNote").textContent = session.isAdmin
+    ? "You are an Admin — you see every record in your organization."
+    : "You see only the records you personally added. Ask your Admin for full visibility.";
+  if(session.isAdmin){
+    document.getElementById("adminSep").style.display = "";
+    document.getElementById("navUsers").style.display = "";
+    document.getElementById("navSettings").style.display = "";
+    document.getElementById("navBackup").style.display = "";
+    document.getElementById("navInstallLink").style.display = "";
+    document.getElementById("navSubscription").style.display = "";
+    document.getElementById("bellWrap").style.display = "inline-block";
+    document.getElementById("upgradeWrap").style.display = "inline-block";
+    buildInstallLinkUI();
+    renderSubscriptionStatus();
+  }
+  if(canMessageClient(session)){
+    document.getElementById("navCommunicate").style.display = "";
+    document.getElementById("navStatements").style.display = "";
+  }
+  await loadOrgProfile();
+  renderManualGrid();
+  bindNav();
+  renderAll();
+  updateSyncChip();
+  syncNow(false);
+  setInterval(()=> syncNow(false), 20*1000); // near-real-time background sync
+  window.addEventListener("online", ()=>{ updateSyncChip(); syncNow(false); });
+  window.addEventListener("offline", updateSyncChip);
+}
+boot();
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js").catch(err=> console.error("SW registration failed:", err));
+}
+
+/* ---------- responsive sidebar ---------- */
+function toggleSidebar(force){
+  const sb = document.getElementById("sidebarEl");
+  const bd = document.getElementById("sidebarBackdrop");
+  const open = force !== undefined ? force : !sb.classList.contains("open");
+  sb.classList.toggle("open", open);
+  bd.classList.toggle("show", open);
+}
+
+/* ---------- nav ---------- */
+function bindNav(){
+  document.querySelectorAll(".nav-link[data-view]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      document.querySelectorAll(".nav-link[data-view]").forEach(n=> n.classList.remove("active"));
+      el.classList.add("active");
+      document.querySelectorAll(".view").forEach(v=> v.classList.remove("active"));
+      document.getElementById("view-" + el.dataset.view).classList.add("active");
+      if(window.innerWidth <= 900) toggleSidebar(false);
+      const titles = {dashboard:["Dashboard","Overview of your organization"], members:["Members","Member register"],
+        contributions:["Contributions","Savings & shares register"], loans:["Loans","Loan disbursement register"],
+        repayments:["Repayments","Loan repayments register"], dividends:["Dividends","Dividends & payouts register"],
+        communicate:["Communicate","Send announcements to members or your team"], manual:["User Manual","Guides for your plan and your role"],
+        statements:["Statements","View, print, download or send member statements"],
+        reports:["Reports","Your activity, summarized by period"],
+        settings:["Organization Settings","Your logo, name and contact details, shown across the system"],
+        backup:["Backup","Download or restore your organization's full data"],
+        users:["Users","Everyone with access to your organization"], installlink:["Install Link","Share to install the app"],
+        subscription:["Subscription","Your organization's plan & renewal"], account:["My Account","Your sign-in details"]};
+      document.getElementById("viewTitle").textContent = titles[el.dataset.view][0];
+      document.getElementById("viewSub").textContent = titles[el.dataset.view][1];
+      if(el.dataset.view === "dashboard") renderDashboardCharts();
+      if(el.dataset.view === "communicate"){ loadMessagesTable(); loadTeamPicker(); }
+      if(el.dataset.view === "statements") loadStatementMemberSelect();
+      if(el.dataset.view === "reports") renderReports();
+      if(el.dataset.view === "settings") loadOrgSettingsForm();
+      if(el.dataset.view === "users") loadUsersTable();
+      if(el.dataset.view === "subscription") renderSubscriptionStatus();
+    });
+  });
+}
+function goToSubscription(){
+  document.querySelector('.nav-link[data-view="subscription"]').click();
+}
+
+/* ---------- subscription status & renewal guidance ---------- */
+function daysUntil(dateStr){
+  if(!dateStr) return null;
+  const diffMs = new Date(dateStr) - new Date();
+  return Math.ceil(diffMs / (1000*60*60*24));
+}
+function renderSubscriptionStatus(){
+  if(!session.isAdmin) return;
+  const days = daysUntil(session.subscriptionExpiry);
+  const badge = document.getElementById("subStatusBadge");
+  const warnBox = document.getElementById("subWarningBox");
+  const dot = document.getElementById("bellDot");
+  const planInfo = session.plan ? findPlan(session.plan) : null;
+  document.getElementById("subPlanLine").textContent = planInfo
+    ? planInfo.name + " Plan — " + planInfo.cycle
+    : (session.onTrial ? "Free Trial (no plan selected yet)" : "No plan on record");
+  document.getElementById("subExpiryLine").textContent = session.subscriptionExpiry
+    ? (session.onTrial ? "Trial ends " : "Expires ") + new Date(session.subscriptionExpiry).toLocaleDateString()
+    : "No expiry on record";
+  document.getElementById("subOrgId").textContent = session.orgId;
+  document.getElementById("subWhatsapp").textContent = CONTACT_INFO.whatsapp;
+  document.getElementById("subPhone").textContent = CONTACT_INFO.phone;
+  document.getElementById("subEmail").textContent = CONTACT_INFO.email;
+  document.getElementById("subWebsite").textContent = CONTACT_INFO.website;
+  document.getElementById("bankAccNo").textContent = BANK_DETAILS.accountNumber;
+  document.getElementById("bankName").textContent = BANK_DETAILS.bankName;
+  document.getElementById("bankAccName").textContent = BANK_DETAILS.accountName;
+
+  let near = false;
+  if(days === null){
+    badge.textContent = "Unknown"; badge.className = "badge-active"; document.getElementById("subDaysLine").textContent = "";
+  } else if(days <= 0){
+    badge.textContent = session.onTrial ? "Trial Expired" : "Expired"; badge.className = "badge-suspended";
+    document.getElementById("subDaysLine").textContent = "Expired " + Math.abs(days) + " day(s) ago";
+    warnBox.style.display = "block";
+    warnBox.textContent = session.onTrial
+      ? "Your free trial has ended. Choose a plan below to keep using OKV SACCO Subscribe without interruption."
+      : "Your subscription has expired. Renew below to keep using OKV SACCO Subscribe without interruption.";
+    near = true;
+  } else if(days <= (session.onTrial ? 7 : 14)){
+    badge.textContent = session.onTrial ? "Trial Active" : "Expiring Soon"; badge.className = "badge-suspended";
+    document.getElementById("subDaysLine").textContent = days + " day(s) remaining";
+    warnBox.style.display = "block";
+    warnBox.textContent = session.onTrial
+      ? `Your free trial ends in ${days} day(s). Choose a plan any time to continue without a gap.`
+      : `Your subscription renews in ${days} day(s). Renew below to avoid any interruption.`;
+    near = true;
+  } else {
+    badge.textContent = "Active"; badge.className = "badge-active";
+    document.getElementById("subDaysLine").textContent = days + " day(s) remaining";
+    warnBox.style.display = "none";
+  }
+  dot.style.display = near ? "block" : "none";
+
+  // Dashboard trial banner
+  const banner = document.getElementById("trialBanner");
+  if(session.onTrial && days !== null){
+    banner.style.display = "";
+    document.getElementById("trialBannerTitle").innerHTML = days <= 0
+      ? '<i class="bi bi-exclamation-triangle"></i> Free Trial Ended'
+      : '<i class="bi bi-stars"></i> Free Trial — ' + days + ' day(s) left';
+    document.getElementById("trialBannerText").textContent = days <= 0
+      ? "Choose a plan to keep your organization's data and access active."
+      : "Explore every feature. Upgrade any time before your trial ends to avoid interruption.";
+  } else {
+    banner.style.display = "none";
+  }
+
+  if(near && !sessionStorage.getItem("okvSubWarned")){
+    showToast(days <= 0
+      ? (session.onTrial ? "Your free trial has ended — pick a plan to continue." : "Your subscription has expired — see the Subscription tab to renew.")
+      : (session.onTrial ? `Free trial ends in ${days} day(s) — pick a plan any time.` : `Subscription renews in ${days} day(s) — see the Subscription tab.`), "err");
+    sessionStorage.setItem("okvSubWarned", "1");
+  }
+  populatePaymentForm();
+}
+
+/* ---------- Upgrade / Renew: bank transfer payment form ---------- */
+function populatePaymentForm(){
+  const sel = document.getElementById("payPlan");
+  if(sel.options.length === 0){
+    Object.keys(PLANS).forEach(cycle=>{
+      PLANS[cycle].forEach(p=>{
+        const opt = document.createElement("option");
+        opt.value = p.id; opt.textContent = `${p.name} — ${p.cycle} (₦${p.price.toLocaleString()})`;
+        sel.appendChild(opt);
+      });
+    });
+  }
+  document.getElementById("payOrgName").value = session.orgName || "";
+  document.getElementById("payFullName").value = session.fullName || session.username || "";
+  document.getElementById("payEmail").value = session.email || "";
+  document.getElementById("payPhone").value = session.phone || "";
+  if(session.plan) sel.value = session.plan;
+  updatePayAmount();
+}
+function updatePayAmount(){
+  const plan = findPlan(document.getElementById("payPlan").value);
+  document.getElementById("payAmount").value = plan ? "₦" + plan.price.toLocaleString() : "";
+}
+function fileToBase64(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+async function submitPayment(){
+  if(!navigator.onLine){ showToast("Connect to the internet to submit your payment for confirmation.", "err"); return; }
+  const orgName = document.getElementById("payOrgName").value.trim();
+  const fullName = document.getElementById("payFullName").value.trim();
+  const email = document.getElementById("payEmail").value.trim();
+  const phone = document.getElementById("payPhone").value.trim();
+  const planId = document.getElementById("payPlan").value;
+  const plan = findPlan(planId);
+  const proofFile = document.getElementById("payProof").files[0];
+  if(!orgName || !fullName || !email || !phone){ showToast("Fill in every field before submitting.", "err"); return; }
+  if(!proofFile){ showToast("Upload your payment screenshot.", "err"); return; }
+  const btn = document.getElementById("paySubmitBtn");
+  btn.disabled = true; btn.textContent = "Submitting…";
+  try{
+    const proofBase64 = await fileToBase64(proofFile);
+    await apiCall("submitPayment", Object.assign({}, session, {
+      orgName, fullName, email, phone, planId, planName: plan ? `${plan.name} — ${plan.cycle}` : planId,
+      amount: plan ? plan.price : "", proofBase64, proofFileName: proofFile.name
+    }));
+    showToast("Submitted! You'll receive an email on your status within the hour.", "ok");
+    document.getElementById("payProof").value = "";
+  }catch(err){
+    showToast(err.message, "err");
+  }finally{
+    btn.disabled = false; btn.innerHTML = '<i class="bi bi-send-check"></i> Submit for Confirmation';
+  }
+}
+
+/* ---------- Communicate ---------- */
+function toggleRecipientPicker(){
+  const mode = document.getElementById("msgRecipientMode").value;
+  const picker = document.getElementById("msgMemberPicker");
+  picker.style.display = mode === "pick" ? "block" : "none";
+  if(mode === "pick") loadMemberPicker();
+}
+async function loadMemberPicker(){
+  const rows = await getVisible("members");
+  const picker = document.getElementById("msgMemberPicker");
+  picker.innerHTML = rows.map(m=> `<label class="d-flex align-items-center gap-2 small py-1">
+    <input type="checkbox" class="msg-member-cb" value="${m.recordId}"> ${esc(m.name)} (${m.recordId})</label>`).join("")
+    || `<div class="text-muted small">No members yet.</div>`;
+}
+async function sendCommunication(){
+  if(!navigator.onLine){ showToast("Connect to the internet to send messages.", "err"); return; }
+  const subject = document.getElementById("msgSubject").value.trim();
+  const message = document.getElementById("msgBody").value.trim();
+  const allMembers = document.getElementById("msgRecipientMode").value === "all";
+  const memberIds = allMembers ? [] : Array.from(document.querySelectorAll(".msg-member-cb:checked")).map(c=> c.value);
+  const channels = [];
+  if(document.getElementById("chEmail").checked) channels.push("email");
+  if(document.getElementById("chSms").checked) channels.push("sms");
+  if(document.getElementById("chWhatsapp").checked) channels.push("whatsapp");
+  if(!message){ showToast("Write a message first.", "err"); return; }
+  if(!channels.length){ showToast("Choose at least one channel.", "err"); return; }
+  if(!allMembers && !memberIds.length){ showToast("Choose at least one member, or switch to All Members.", "err"); return; }
+  try{
+    const result = await apiCall("sendMessage", Object.assign({}, session, { subject, message, allMembers, memberIds, channels }));
+    showToast(`Sent to ${result.recipients} member(s) — ${result.sent} delivered, ${result.failed} failed.`, "ok");
+    document.getElementById("msgSubject").value = ""; document.getElementById("msgBody").value = "";
+    loadMessagesTable();
+  }catch(err){ showToast(err.message, "err"); }
+}
+async function loadMessagesTable(){
+  try{
+    const result = await apiCall("listMessages", session);
+    document.getElementById("tbl-messages").innerHTML = result.messages.map(m=> `<tr>
+      <td>${esc(m.subject || "(no subject)")}</td><td>${esc(m.channels)}</td>
+      <td>${m.recipientCount}</td><td>${m.sent} sent / ${m.failed} failed</td>
+      <td>${new Date(m.sentAt).toLocaleString()}</td></tr>`).join("")
+      || `<tr><td colspan="5" class="text-muted text-center py-3">No messages sent yet.</td></tr>`;
+  }catch(err){ /* not fatal if this fails to load */ }
+}
+
+/* ---------- Member Statement HTML builder (used by the Statements tab) ---------- */
+function inRange(dateStr, from, to){
+  if(!dateStr) return true;
+  const d = new Date(dateStr);
+  if(from && d < new Date(from)) return false;
+  if(to && d > new Date(to)) return false;
+  return true;
+}
+async function buildMemberStatementHtml(member, from, to){
+  const [contributions, loans, repayments, dividends] = await Promise.all([
+    getVisible("contributions"), getVisible("loans"), getVisible("repayments"), getVisible("dividends")
+  ]);
+  const myContrib = contributions.filter(c=> c.memberId === member.recordId && inRange(c.date, from, to));
+  const myLoans = loans.filter(l=> l.memberId === member.recordId && inRange(l.disbDate, from, to));
+  const allMyLoans = loans.filter(l=> l.memberId === member.recordId); // for repayment matching regardless of date filter on the loan itself
+  const myRepayments = repayments.filter(r=> allMyLoans.some(l=> l.recordId === r.loanId) && inRange(r.date, from, to));
+  const myDividends = dividends.filter(d=> d.memberId === member.recordId && inRange(d.paymentDate, from, to));
+
+  const totalSavings = myContrib.reduce((s,c)=> s + (Number(c.savings)||0), 0);
+  const totalShares = myContrib.reduce((s,c)=> s + (Number(c.shares)||0), 0);
+  const totalLoans = myLoans.reduce((s,l)=> s + (Number(l.amount)||0), 0);
+  const totalRepaid = myRepayments.reduce((s,r)=> s + (Number(r.amount)||0), 0);
+  const totalDividends = myDividends.reduce((s,d)=> s + (Number(d.rate)||0) * (Number(d.sharesHeld)||0) / 100, 0);
+
+  const rowsOrEmpty = (rows, cols)=> rows.length
+    ? rows.map(r=> `<tr>${cols.map(c=> `<td style="padding:4px 8px;border-bottom:1px solid #eee;">${esc(r[c] ?? "")}</td>`).join("")}</tr>`).join("")
+    : `<tr><td colspan="${cols.length}" style="padding:6px 8px;color:#888;">None in this period</td></tr>`;
+  const cur = ORG_PROFILE.currencySymbol || "₦";
+
+  return `
+    <div style="font-family:Arial,sans-serif;color:#1E2A3A;max-width:600px;">
+      <h2 style="color:${(PLATFORM_SETTINGS && PLATFORM_SETTINGS.branding && PLATFORM_SETTINGS.branding.secondaryColor) || '#0D1B2A'};">Member Statement</h2>
+      <p><b>${esc(ORG_PROFILE.displayName || session.orgName || session.orgId)}</b>${ORG_PROFILE.address ? `<br><span style="color:#666;font-size:12px;">${esc(ORG_PROFILE.address)}</span>` : ""}</p>
+      <p><b>${esc(member.name)}</b> (${esc(member.recordId)})${from || to ? `<br><span style="color:#666;font-size:13px;">Period: ${from||"start"} to ${to||"today"}</span>` : ""}</p>
+
+      <h3 style="font-size:15px;">Contributions</h3>
+      <table style="border-collapse:collapse;width:100%;font-size:13px;"><tr style="background:#f4f7fc;"><th style="text-align:left;padding:4px 8px;">Date</th><th style="text-align:left;padding:4px 8px;">Savings</th><th style="text-align:left;padding:4px 8px;">Shares</th><th style="text-align:left;padding:4px 8px;">Method</th></tr>
+      ${rowsOrEmpty(myContrib, ["date","savings","shares","method"])}</table>
+      <p style="font-size:13px;"><b>Total Savings: ${cur}${totalSavings.toLocaleString()} &nbsp; Total Shares: ${cur}${totalShares.toLocaleString()}</b></p>
+
+      <h3 style="font-size:15px;">Loans</h3>
+      <table style="border-collapse:collapse;width:100%;font-size:13px;"><tr style="background:#f4f7fc;"><th style="text-align:left;padding:4px 8px;">Loan ID</th><th style="text-align:left;padding:4px 8px;">Amount</th><th style="text-align:left;padding:4px 8px;">Rate</th><th style="text-align:left;padding:4px 8px;">Term</th></tr>
+      ${rowsOrEmpty(myLoans, ["recordId","amount","rate","term"])}</table>
+      <p style="font-size:13px;"><b>Total Disbursed: ${cur}${totalLoans.toLocaleString()}</b></p>
+
+      <h3 style="font-size:15px;">Repayments</h3>
+      <table style="border-collapse:collapse;width:100%;font-size:13px;"><tr style="background:#f4f7fc;"><th style="text-align:left;padding:4px 8px;">Loan ID</th><th style="text-align:left;padding:4px 8px;">Date</th><th style="text-align:left;padding:4px 8px;">Amount</th></tr>
+      ${rowsOrEmpty(myRepayments, ["loanId","date","amount"])}</table>
+      <p style="font-size:13px;"><b>Total Repaid: ${cur}${totalRepaid.toLocaleString()}</b></p>
+
+      <h3 style="font-size:15px;">Dividends</h3>
+      <table style="border-collapse:collapse;width:100%;font-size:13px;"><tr style="background:#f4f7fc;"><th style="text-align:left;padding:4px 8px;">Year</th><th style="text-align:left;padding:4px 8px;">Rate</th><th style="text-align:left;padding:4px 8px;">Paid</th></tr>
+      ${rowsOrEmpty(myDividends, ["year","rate","paymentDate"])}</table>
+      <p style="font-size:13px;"><b>Total Dividends: ${cur}${totalDividends.toLocaleString()}</b></p>
+
+      <p style="font-size:11px;color:#888;margin-top:20px;">Generated by ${esc(ORG_PROFILE.displayName || session.orgName || session.orgId)} via OKV SACCO.</p>
+    </div>`;
+}
+function buildMemberStatementText_(member, from, to, contributions, loans, repayments, dividends){
+  const cur = ORG_PROFILE.currencySymbol || "₦";
+  const myContrib = contributions.filter(c=> c.memberId === member.recordId && inRange(c.date, from, to));
+  const myLoans = loans.filter(l=> l.memberId === member.recordId && inRange(l.disbDate, from, to));
+  const allMyLoans = loans.filter(l=> l.memberId === member.recordId);
+  const myRepayments = repayments.filter(r=> allMyLoans.some(l=> l.recordId === r.loanId) && inRange(r.date, from, to));
+  const totalSavings = myContrib.reduce((s,c)=> s + (Number(c.savings)||0), 0);
+  const totalLoans = myLoans.reduce((s,l)=> s + (Number(l.amount)||0), 0);
+  const totalRepaid = myRepayments.reduce((s,r)=> s + (Number(r.amount)||0), 0);
+  return `Statement for ${member.name} (${member.recordId})\nPeriod: ${from||"start"} to ${to||"today"}\n` +
+    `Savings: ${cur}${totalSavings.toLocaleString()}\nLoans: ${cur}${totalLoans.toLocaleString()}\nRepaid: ${cur}${totalRepaid.toLocaleString()}\n` +
+    `— ${ORG_PROFILE.displayName || session.orgName || ""}`;
+}
+async function sendStatements(){
+  if(!navigator.onLine){ showToast("Connect to the internet to send statements.", "err"); return; }
+  const targets = await getStatementTargets_();
+  if(!targets.length){ showToast("No members to send a statement to.", "err"); return; }
+  const { from, to } = statementDateRange_();
+  const channels = [];
+  if(document.getElementById("stmtChEmail").checked) channels.push("email");
+  if(document.getElementById("stmtChSms").checked) channels.push("sms");
+  if(document.getElementById("stmtChWhatsapp").checked) channels.push("whatsapp");
+  if(!channels.length){ showToast("Choose at least one channel.", "err"); return; }
+  const btn = document.getElementById("stmtSendBtn");
+  btn.disabled = true; btn.textContent = "Building statements…";
+  try{
+    const [contributions, loans, repayments, dividends] = await Promise.all([
+      getVisible("contributions"), getVisible("loans"), getVisible("repayments"), getVisible("dividends")
+    ]);
+    const statements = [];
+    let skipped = 0;
+    for(const m of targets){
+      if(channels.includes("email")){
+        if(m.email){
+          const htmlBody = await buildMemberStatementHtml(m, from, to);
+          statements.push({ memberId: m.recordId, channel:"email", to: m.email, subject: `Your Statement — ${ORG_PROFILE.displayName || session.orgName || session.orgId}`, htmlBody });
+        } else skipped++;
+      }
+      ["sms","whatsapp"].forEach(ch=>{
+        if(channels.includes(ch)){
+          if(m.phone) statements.push({ memberId: m.recordId, channel:ch, phone: m.phone, textBody: buildMemberStatementText_(m, from, to, contributions, loans, repayments, dividends) });
+          else skipped++;
+        }
+      });
+    }
+    if(!statements.length){ showToast("None of the selected member(s) have the contact info needed for those channels.", "err"); return; }
+    const result = await apiCall("sendStatements", Object.assign({}, session, { statements }));
+    showToast(`Sent ${result.sent} statement(s)${result.failed ? `, ${result.failed} failed` : ""}${skipped ? `, ${skipped} skipped (missing contact info)` : ""}.`, "ok");
+    loadMessagesTable();
+  }catch(err){
+    showToast(err.message, "err");
+  }finally{
+    btn.disabled = false; btn.innerHTML = '<i class="bi bi-envelope-paper"></i> Send Statement(s)';
+  }
+}
+
+/* ---------- User Manual ---------- */
+const MANUALS = {
+  getting_started: { title:"Getting Started Guide", audience:"Everyone", body:
+`# Getting Started with OKV SACCO
+
+Welcome! This guide covers the basics every team member needs.
+
+## Signing in
+Use the username and password your Admin gave you. If you forget your password, ask your Admin to reset it from the Users tab (or use "Forgot password?" if you are the Admin).
+
+## Working offline
+The app keeps working with no internet connection — anything you add or edit is saved on this device immediately. Once you're back online, tap "Sync Now" (or wait — it syncs automatically every couple of minutes) to send your changes to your team and pull in theirs.
+
+## Your registers
+Members, Contributions, Loans, Repayments and Dividends all work the same way: tap "Add" to create a record, the pencil icon to edit, the trash icon to remove. If you're not an Admin, you'll only see records you personally added — ask your Admin for full visibility.
+
+## Getting help
+Reach OKV Technology Consults any time from the Subscription tab.` },
+  admin_guide: { title:"Admin Guide — Users & Organization", audience:"Admin", body:
+`# Admin Guide
+
+As the Admin, you're the only one who can manage your team and your subscription.
+
+## Managing Users
+Go to Users → Add User to create a login for a staff member. Assign one or more roles — you can edit a user's roles at any time from the same screen. Use "Suspend" to instantly block someone's access without deleting their account, and "Set Password" if they forget theirs (no email needed — you set it directly).
+
+## Sharing the install link
+The Install Link tab has a link you can send to any staff member. It opens straight to the install screen with device instructions — after installing, they land on the sign-in screen.
+
+## Subscription & payment
+The Subscription tab shows your trial or plan status, days remaining, and a bank-transfer form to upgrade or renew. Submit the form after paying and you'll get an emailed confirmation within the hour — your plan updates on this dashboard automatically once confirmed.` },
+  communication_guide: { title:"Sending Announcements & Statements", audience:"Admin, Manager, Membership & Finance Officers", body:
+`# Communicating with Members
+
+From the Communicate tab you can message all members at once, or pick specific ones — by Email, SMS, or WhatsApp.
+
+## Personalizing messages
+Use {name} and {memberId} anywhere in your message — each member receives their own name and ID automatically. This is ideal for statements ("Dear {name}, your balance as of today...") as well as general announcements.
+
+## Channels
+Email always works. SMS and WhatsApp need your Admin to configure a messaging provider on the backend — if those aren't set up yet, stick to Email until they are.
+
+## Member statements
+The Statements tab (separate from Communicate) lets you view, print, download or send a proper statement per member — pick a period (Monthly, Quarterly, Bi-Annual, Yearly, or a custom range), one member or all of them, then send by whichever channels are available.
+
+## Messaging your own team
+Use the "Message Your Team" card on the Communicate tab to reach staff — not members — individually or all at once.
+
+## Message history
+The bottom of the Communicate tab keeps a log of what was sent, to how many members, and how many succeeded — useful for confirming a statement run went out correctly.` },
+  manager_guide: { title:"SACCO Manager / General Manager Guide", audience:"SACCO Manager / General Manager", body:
+`# SACCO Manager / General Manager Guide
+
+As Manager, you have the broadest day-to-day operational view after the Admin.
+
+## Dashboard & Reports
+The Dashboard gives you a live overview — members, contributions, loans and dividends, with charts that update automatically. The Reports tab breaks your organization's activity down by Daily, Weekly, Monthly, Quarterly or Yearly period, with a downloadable/printable summary — useful for board or AGM reporting.
+
+## Overseeing every register
+You can review Members, Contributions, Loans, Repayments and Dividends across the organization. Use Export CSV on any register if you need the raw data in a spreadsheet.
+
+## Communicating
+You can message all members (or specific ones) from the Communicate tab, and send personalized Statements from the Statements tab — by Email, SMS or WhatsApp.
+
+## What you can't do
+Only the Admin can manage staff logins, organization settings, and the subscription — if you need a new staff account or a setting changed, ask your Admin.` },
+  membership_officer_guide: { title:"Membership Officer Guide", audience:"Membership Officer", body:
+`# Membership Officer Guide
+
+Your focus is the Members register and keeping members informed.
+
+## Managing the Members register
+Go to Members → Add Member to register someone new. Keep phone numbers and status (Active/Inactive/Pending) up to date — they're what statements and messages use to reach each member correctly.
+
+## Sending statements & announcements
+Use the Statements tab to send a member their savings/loans/dividends summary for a chosen period, one at a time or in bulk. Use the Communicate tab for general announcements to all members or a chosen group.
+
+## CSV import
+If you're onboarding many members at once, use Import CSV on the Members tab — download the template first, fill it in, and upload it rather than adding members one by one.` },
+  loan_officer_guide: { title:"Loan Officer Quick Guide", audience:"Loan Officer", body:
+`# Loan Officer Quick Guide
+
+## Recording a loan
+Go to Loans → Add Loan. You'll need the Member ID (found on the Members tab), the amount, disbursement date, annual rate, and term in months.
+
+## Tracking repayments
+Repayments are recorded separately, linked by Loan ID — go to Repayments → Add Repayment. Keep the Loan ID handy from the Loans tab.
+
+## Visibility
+Unless you're an Admin, you'll only see loans and repayments you personally recorded.` },
+  cashier_guide: { title:"Repayment / Cashier Officer Quick Guide", audience:"Repayment / Cashier Officer", body:
+`# Cashier Quick Guide
+
+## Recording a repayment
+Go to Repayments → Add Repayment. Enter the Loan ID (from the Loans tab), the date, amount, and payment method.
+
+## Daily reconciliation
+Use the Repayments table to review everything you've recorded for the day — filter mentally by date since entries are listed most recent first.` },
+  finance_guide: { title:"Accountant / Finance Officer Guide", audience:"Accountant / Finance Officer", body:
+`# Accountant / Finance Officer Guide
+
+## Full financial picture
+As a Finance Officer, coordinate with your Admin for full visibility across Contributions, Loans, Repayments and Dividends if you need to see records added by other staff.
+
+## Sending statements
+Use the Statements tab (not just Communicate) to generate a proper statement per member for a chosen period — Monthly, Quarterly, Bi-Annual or Yearly — with totals for savings, loans, repayments and dividends, downloadable as CSV or sendable directly.
+
+## Dividends
+Go to Dividends → Add Dividend to record a payout, linked to a Member ID with the year, shares held, rate and payment date.
+
+## Reports & Backup
+The Reports tab summarizes organization-wide activity by period for board reporting. The Backup tab (if your Admin grants you access) lets you download a full JSON or CSV backup of every register.` },
+  professional_addendum: { title:"Professional Plan Features", audience:"Professional plan only", body:
+`# Professional Plan Add-ons
+
+Your Professional plan includes everything in Basic, plus:
+
+- Unlimited staff logins and role assignments
+- Priority support response times
+- Data export (contact support for a full data export of your organization)
+
+If you're evaluating whether to upgrade, see the Pricing page — every plan starts with a 7-day free trial.` }
+};
+function downloadManual(key){
+  const m = MANUALS[key];
+  const blob = new Blob([m.body], {type:"text/markdown"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = key + ".md";
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+function renderManualGrid(){
+  const grid = document.getElementById("manualGrid");
+  const roles = session.roles || [];
+  const isPro = (session.plan || "").indexOf("professional") > -1;
+  const available = ["getting_started"];
+  if(session.isAdmin) available.push("admin_guide");
+  if(session.isAdmin || roles.includes("SACCO Manager / General Manager")) available.push("manager_guide");
+  if(session.isAdmin || roles.includes("Membership Officer")) available.push("membership_officer_guide");
+  if(session.isAdmin || roles.some(r=> MESSAGING_ROLES.includes(r))) available.push("communication_guide");
+  if(session.isAdmin || roles.includes("Loan Officer")) available.push("loan_officer_guide");
+  if(session.isAdmin || roles.includes("Repayment / Cashier Officer")) available.push("cashier_guide");
+  if(session.isAdmin || roles.includes("Accountant / Finance Officer")) available.push("finance_guide");
+  if(isPro) available.push("professional_addendum");
+  const roleNote = document.getElementById("manualRoleNote");
+  if(roleNote){
+    roleNote.textContent = session.isAdmin
+      ? "Showing every guide — as Admin, you oversee every role."
+      : (roles.length ? `Showing guides for your role(s): ${roles.join(", ")}.` : "Showing the guides available to your account.");
+  }
+  grid.innerHTML = [...new Set(available)].map(key=>{
+    const m = MANUALS[key];
+    return `<div class="col-md-6">
+      <div class="border rounded-3 p-3 h-100 d-flex flex-column">
+        <div class="fw-semibold small mb-1"><i class="bi bi-file-earmark-text text-primary"></i> ${m.title}</div>
+        <div class="small text-muted mb-2">For: ${m.audience}</div>
+        <button class="btn btn-outline-secondary btn-sm mt-auto" onclick="downloadManual('${key}')"><i class="bi bi-download"></i> Download</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+
+/* ---------- toast ---------- */
+function showToast(msg, kind){
+  const box = document.getElementById("toastBox");
+  const el = document.createElement("div");
+  el.className = "toast-msg" + (kind ? " " + kind : "");
+  el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(()=> el.remove(), 4200);
+}
+
+/* ---------- visibility-scoped data access ---------- */
+async function getVisible(store){
+  const rows = await ldbGetAll(store);
+  return rows.filter(r=> !r.deleted && (session.isAdmin || r.createdBy === session.userId))
+    .sort((a,b)=> (b.updatedAt||"").localeCompare(a.updatedAt||""));
+}
+
+/* ---------- render ---------- */
+async function renderAll(){
+  for(const store of Object.keys(SCHEMAS)) await renderTable(store);
+  const [m,c,l,d] = await Promise.all([getVisible("members"), getVisible("contributions"), getVisible("loans"), getVisible("dividends")]);
+  document.getElementById("kpiMembers").textContent = m.length;
+  document.getElementById("kpiContrib").textContent = c.length;
+  document.getElementById("kpiLoans").textContent = l.length;
+  document.getElementById("kpiDividends").textContent = d.length;
+  if(document.getElementById("view-dashboard").classList.contains("active")) renderDashboardCharts();
+  if(document.getElementById("view-reports").classList.contains("active")) renderReports();
+  await renderRegisterStats();
+}
+/* Small stats + a chart at the top of each register tab — the same "modern
+   dashboard" treatment as the main Overview, scoped to that one register so
+   every tab feels equally current rather than only the homepage. */
+let registerCharts = {};
+async function renderRegisterStats(){
+  const [members, contributions, loans, repayments, dividends] = await Promise.all([
+    getVisible("members"), getVisible("contributions"), getVisible("loans"), getVisible("repayments"), getVisible("dividends")
+  ]);
+  const mkChart = (id, cfg)=>{
+    const el = document.getElementById(id);
+    if(!el || typeof Chart === "undefined") return;
+    if(registerCharts[id]) registerCharts[id].destroy();
+    registerCharts[id] = new Chart(el, cfg);
+  };
+
+  // Members
+  const statusCounts = { Active:0, Inactive:0, Pending:0 };
+  members.forEach(m=>{ if(statusCounts[m.status]!==undefined) statusCounts[m.status]++; });
+  document.getElementById("regMembersTotal").textContent = members.length;
+  document.getElementById("regMembersActive").textContent = statusCounts.Active;
+  document.getElementById("regMembersOther").textContent = statusCounts.Inactive + statusCounts.Pending;
+  mkChart("regChartMembers", { type:"doughnut", data:{ labels:Object.keys(statusCounts), datasets:[{ data:Object.values(statusCounts), backgroundColor:["#22C7A9","#B3261E","#F5A623"] }] },
+    options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ position:"bottom", labels:{ boxWidth:10, font:{ size:10 } } } } } });
+
+  // Contributions
+  const totalSavings = contributions.reduce((s,c)=> s+(Number(c.savings)||0),0);
+  const totalShares = contributions.reduce((s,c)=> s+(Number(c.shares)||0),0);
+  document.getElementById("regContribSavings").textContent = fmtN(totalSavings);
+  document.getElementById("regContribShares").textContent = fmtN(totalShares);
+  mkChart("regChartContrib", { type:"bar", data:{ labels:["Savings","Shares"], datasets:[{ data:[totalSavings,totalShares], backgroundColor:["#1B6CA8","#22C7A9"] }] },
+    options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } } });
+
+  // Loans
+  const totalDisbursed = loans.reduce((s,l)=> s+(Number(l.amount)||0),0);
+  const totalRepaidAll = repayments.reduce((s,r)=> s+(Number(r.amount)||0),0);
+  document.getElementById("regLoansCount").textContent = loans.length;
+  document.getElementById("regLoansTotal").textContent = fmtN(totalDisbursed);
+  mkChart("regChartLoans", { type:"doughnut", data:{ labels:["Repaid","Outstanding"], datasets:[{ data:[Math.min(totalRepaidAll,totalDisbursed), Math.max(totalDisbursed-totalRepaidAll,0)], backgroundColor:["#22C7A9","#F5A623"] }] },
+    options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ position:"bottom", labels:{ boxWidth:10, font:{ size:10 } } } } } });
+
+  // Repayments
+  document.getElementById("regRepayCount").textContent = repayments.length;
+  document.getElementById("regRepayTotal").textContent = fmtN(totalRepaidAll);
+  const months = monthLabels_(6);
+  const now = new Date();
+  const monthKey = (d)=> { const dt = new Date(d); return dt.getFullYear()+"-"+dt.getMonth(); };
+  const wantedKeys = []; for(let i=5;i>=0;i--){ const d = new Date(now.getFullYear(), now.getMonth()-i, 1); wantedKeys.push(d.getFullYear()+"-"+d.getMonth()); }
+  const repayByMonth = wantedKeys.map(k=> repayments.filter(r=> r.date && monthKey(r.date)===k).reduce((s,r)=> s+(Number(r.amount)||0),0));
+  mkChart("regChartRepay", { type:"line", data:{ labels:months, datasets:[{ data:repayByMonth, borderColor:"#0D1B2A", backgroundColor:"rgba(13,27,42,.10)", tension:.35, fill:true }] },
+    options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } } });
+
+  // Dividends
+  const years = [...new Set(dividends.map(d=> d.year).filter(Boolean))];
+  document.getElementById("regDivCount").textContent = dividends.length;
+  document.getElementById("regDivYears").textContent = years.length;
+  const byYear = {};
+  dividends.forEach(d=>{ const y = d.year || "—"; byYear[y] = (byYear[y]||0) + (Number(d.rate)||0)*(Number(d.sharesHeld)||0)/100; });
+  mkChart("regChartDiv", { type:"bar", data:{ labels:Object.keys(byYear), datasets:[{ data:Object.values(byYear), backgroundColor:"#F5A623" }] },
+    options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } } });
+}
+async function renderTable(store){
+  const rows = await getVisible(store);
+  const tbody = document.getElementById("tbl-" + store);
+  if(!tbody) return;
+  if(!rows.length){ tbody.innerHTML = `<tr><td colspan="${REGISTER_COLUMN_COUNT[store] || 6}" class="text-muted text-center py-3">No records yet.</td></tr>`; return; }
+  const renderers = {
+    members: r=> `<td>${r.recordId}</td><td>${esc(r.name)}</td><td>${esc(r.phone)}</td><td>${esc(r.status)}</td><td>${esc(r.joinDate)}</td>`,
+    contributions: r=> `<td>${r.recordId}</td><td>${esc(r.memberId)}</td><td>${esc(r.date)}</td><td>${fmtN(r.savings)}</td><td>${fmtN(r.shares)}</td>`,
+    loans: r=> `<td>${r.recordId}</td><td>${esc(r.memberId)}</td><td>${fmtN(r.amount)}</td><td>${esc(r.rate)}%</td><td>${esc(r.term)}m</td>`,
+    repayments: r=> `<td>${r.recordId}</td><td>${esc(r.loanId)}</td><td>${esc(r.date)}</td><td>${fmtN(r.amount)}</td>`,
+    dividends: r=> `<td>${r.recordId}</td><td>${esc(r.memberId)}</td><td>${esc(r.year)}</td><td>${esc(r.rate)}%</td><td>${esc(r.paymentDate)}</td>`
+  };
+  tbody.innerHTML = rows.map(r=> `<tr>${renderers[store](r)}
+    <td class="text-end">
+      <button class="btn btn-sm btn-outline-secondary" onclick="toggleActionsMenu(event,'${store}','${r.recordId}')"><i class="bi bi-three-dots"></i> Actions</button>
+    </td></tr>`).join("");
+}
+/* ---------- actions dropdown ----------
+   Bug fix: each row originally carried its own absolutely-positioned
+   dropdown, but .table-scroll sets overflow-x:auto — which, per the CSS
+   spec, forces the un-set overflow-y to auto too, silently clipping any
+   dropdown that tried to extend below the scroll container. A single
+   shared menu positioned with position:fixed from the trigger button's
+   actual on-screen coordinates sidesteps that entirely, regardless of
+   what any ancestor's overflow is set to. */
+function closeActionsMenus(){ document.getElementById("sharedActionsMenu").classList.remove("show"); }
+function toggleActionsMenu(evt, store, recordId){
+  evt.stopPropagation();
+  const menu = document.getElementById("sharedActionsMenu");
+  const btn = evt.currentTarget;
+  const reopening = menu.dataset.for !== `${store}-${recordId}` || !menu.classList.contains("show");
+  closeActionsMenus();
+  if(!reopening) return;
+  menu.dataset.for = `${store}-${recordId}`;
+  menu.innerHTML = `
+    <button onclick="closeActionsMenus();openRecordModal('${store}','${recordId}')"><i class="bi bi-pencil"></i> Edit</button>
+    ${store === "members" ? `<button onclick="closeActionsMenus();openMemberStatementFrom('${recordId}')"><i class="bi bi-file-earmark-text"></i> Statement</button>` : ""}
+    <button class="danger" onclick="closeActionsMenus();deleteRecord('${store}','${recordId}')"><i class="bi bi-trash"></i> Delete</button>`;
+  const rect = btn.getBoundingClientRect();
+  menu.style.top = Math.min(rect.bottom + 4, window.innerHeight - 140) + "px";
+  menu.style.left = Math.max(8, rect.right - 150) + "px";
+  menu.classList.add("show");
+}
+document.addEventListener("click", closeActionsMenus);
+document.addEventListener("scroll", closeActionsMenus, true);
+function openMemberStatementFrom(memberId){
+  document.querySelector('.nav-link[data-view="statements"]').click();
+  document.getElementById("stmtRecipientMode2").value = "individual";
+  toggleStatementPicker2().then(()=>{
+    document.getElementById("stmtMemberSelect2").value = memberId;
+  });
+}
+function esc(v){ return v===undefined||v===null ? "" : String(v).replace(/</g,"&lt;"); }
+function fmtN(v){ const n = Number(v)||0; return (ORG_PROFILE.currencySymbol || "₦") + n.toLocaleString(); }
+
+/* ---------- record CRUD (local-first, synced later) ---------- */
+function openRecordModal(store, recordId){
+  editingStore = store; editingId = recordId || null;
+  const schema = SCHEMAS[store];
+  document.getElementById("recordModalTitle").textContent = (recordId ? "Edit " : "Add ") + schema.label;
+  const container = document.getElementById("recordModalFields");
+  container.innerHTML = "";
+  const existing = {};
+  const build = async ()=>{
+    let record = {};
+    if(recordId){ record = await ldbGet(store, recordId) || {}; }
+    schema.fields.forEach(f=>{
+      const wrap = document.createElement("div"); wrap.className = "mb-2";
+      const label = document.createElement("label"); label.className = "small fw-semibold"; label.textContent = f.label;
+      wrap.appendChild(label);
+      let input;
+      if(f.type === "select"){
+        input = document.createElement("select"); input.className = "form-select";
+        f.options.forEach(o=>{ const opt = document.createElement("option"); opt.value = o; opt.textContent = o; input.appendChild(opt); });
+      } else {
+        input = document.createElement("input"); input.type = f.type; input.className = "form-control";
+      }
+      input.id = "rf_" + f.key;
+      input.value = record[f.key] !== undefined ? record[f.key] : "";
+      wrap.appendChild(input);
+      if(f.help){ const help = document.createElement("div"); help.className = "small text-muted"; help.textContent = f.help; wrap.appendChild(help); }
+      container.appendChild(wrap);
+    });
+  };
+  build();
+  document.getElementById("recordModalOverlay").classList.add("show");
+}
+function closeRecordModal(){ document.getElementById("recordModalOverlay").classList.remove("show"); }
+async function saveRecordModal(){
+  const store = editingStore; const schema = SCHEMAS[store];
+  const data = {};
+  for(const f of schema.fields){
+    const val = document.getElementById("rf_" + f.key).value.trim();
+    if(f.required && !val){ showToast(`${f.label} is required.`, "err"); return; }
+    data[f.key] = val;
+  }
+  const now = new Date().toISOString();
+  let record;
+  if(editingId){
+    record = await ldbGet(store, editingId);
+    record = Object.assign(record, data, { updatedAt: now, dirty: true });
+  } else {
+    const recordId = schema.prefix + "-" + Math.random().toString(36).slice(2,8).toUpperCase();
+    record = Object.assign({recordId, createdBy: session.userId, updatedAt: now, dirty:true, deleted:false}, data);
+  }
+  await ldbPut(store, record);
+  closeRecordModal();
+  await renderAll();
+  showToast(`${schema.label} saved.`, "ok");
+  syncNow(false);
+}
+async function deleteRecord(store, recordId){
+  if(!confirm("Delete this record?")) return;
+  const record = await ldbGet(store, recordId);
+  if(!record) return;
+  record.deleted = true; record.dirty = true; record.updatedAt = new Date().toISOString();
+  await ldbPut(store, record);
+  await renderAll();
+  showToast("Record deleted.", "ok");
+  syncNow(false);
+}
+
+/* ================= Organization Settings (per-tenant profile) ================= */
+async function loadOrgProfile(){
+  try{
+    const result = await apiCall("getOrgProfile", session);
+    ORG_PROFILE = result.profile || {};
+  }catch(e){ ORG_PROFILE = {}; /* best-effort — falls back to defaults below */ }
+  applyOrgProfileToUI();
+}
+function applyOrgProfileToUI(){
+  const name = ORG_PROFILE.displayName || session.orgName || "OKV SACCO";
+  document.querySelectorAll(".brand-name").forEach(el=> el.textContent = name);
+  if(ORG_PROFILE.logoUrl){
+    const img = document.getElementById("brandLogoImg");
+    if(img){ img.src = ORG_PROFILE.logoUrl; img.style.display = "inline-block"; document.getElementById("brandMark").style.display = "none"; }
+  }
+}
+function loadOrgSettingsForm(){
+  document.getElementById("orgDisplayName").value = ORG_PROFILE.displayName || "";
+  document.getElementById("orgLogoUrl").value = ORG_PROFILE.logoUrl || "";
+  document.getElementById("orgAddress").value = ORG_PROFILE.address || "";
+  document.getElementById("orgPhone").value = ORG_PROFILE.phone || "";
+  document.getElementById("orgEmail").value = ORG_PROFILE.email || "";
+  document.getElementById("orgCurrency").value = ORG_PROFILE.currencySymbol || "₦";
+}
+async function saveOrgSettings(){
+  if(!navigator.onLine){ showToast("Connect to the internet to save organization settings.", "err"); return; }
+  const profile = {
+    displayName: document.getElementById("orgDisplayName").value.trim(),
+    logoUrl: document.getElementById("orgLogoUrl").value.trim(),
+    address: document.getElementById("orgAddress").value.trim(),
+    phone: document.getElementById("orgPhone").value.trim(),
+    email: document.getElementById("orgEmail").value.trim(),
+    currencySymbol: document.getElementById("orgCurrency").value.trim() || "₦"
+  };
+  try{
+    const result = await apiCall("updateOrgProfile", Object.assign({}, session, { profile }));
+    ORG_PROFILE = result.profile;
+    applyOrgProfileToUI();
+    await renderAll();
+    showToast("Organization settings saved.", "ok");
+  }catch(err){ showToast(err.message, "err"); }
+}
+
+/* ================= CSV Export / Import ================= */
+function csvEscape_(v){
+  const s = v===undefined||v===null ? "" : String(v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+}
+function downloadText_(filename, text, mime){
+  const blob = new Blob([text], { type: mime || "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+async function exportCsv(store){
+  const rows = await getVisible(store);
+  const fields = SCHEMAS[store].fields.map(f=> f.key);
+  const header = ["recordId", ...fields].join(",");
+  const lines = rows.map(r=> [r.recordId, ...fields.map(f=> csvEscape_(r[f]))].join(","));
+  downloadText_(`${store}-export-${new Date().toISOString().slice(0,10)}.csv`, [header, ...lines].join("\n"));
+  showToast(`Exported ${rows.length} ${SCHEMAS[store].label.toLowerCase()} record(s).`, "ok");
+}
+let importTargetStore = null;
+function openImportModal(store){
+  importTargetStore = store;
+  const schema = SCHEMAS[store];
+  document.getElementById("importModalTitle").textContent = "Import " + schema.label + " CSV";
+  const reqFields = schema.fields.filter(f=> f.required).map(f=> f.label).join(", ") || "none";
+  document.getElementById("importInstructions").innerHTML =
+    `Upload a CSV with a header row matching the template below. Columns: <b>${schema.fields.map(f=>f.label).join(", ")}</b>. ` +
+    `Required: <b>${reqFields}</b>. Each row becomes a new ${schema.label.toLowerCase()} record.`;
+  document.getElementById("importFile").value = "";
+  document.getElementById("importPreviewNote").textContent = "";
+  document.getElementById("importModalOverlay").classList.add("show");
+}
+function closeImportModal(){ document.getElementById("importModalOverlay").classList.remove("show"); }
+function downloadImportTemplate(){
+  const schema = SCHEMAS[importTargetStore];
+  const header = schema.fields.map(f=> f.key).join(",");
+  const example = schema.fields.map(f=> f.type === "date" ? "2026-01-01" : (f.type === "number" ? "0" : (f.options ? f.options[0] : "example"))).join(",");
+  downloadText_(`${importTargetStore}-import-template.csv`, header + "\n" + example);
+}
+function parseCsv_(text){
+  const lines = text.split(/\r?\n/).filter(l=> l.trim().length);
+  if(!lines.length) return [];
+  const splitLine = (line)=>{
+    const out = []; let cur = ""; let inQ = false;
+    for(let i=0;i<line.length;i++){
+      const ch = line[i];
+      if(inQ){
+        if(ch === '"' && line[i+1] === '"'){ cur += '"'; i++; }
+        else if(ch === '"'){ inQ = false; }
+        else cur += ch;
+      } else {
+        if(ch === '"') inQ = true;
+        else if(ch === ','){ out.push(cur); cur = ""; }
+        else cur += ch;
+      }
+    }
+    out.push(cur);
+    return out;
+  };
+  const headers = splitLine(lines[0]).map(h=> h.trim());
+  return lines.slice(1).map(line=>{
+    const cells = splitLine(line);
+    const obj = {}; headers.forEach((h,i)=> obj[h] = (cells[i]||"").trim());
+    return obj;
+  });
+}
+async function runCsvImport(){
+  const file = document.getElementById("importFile").files[0];
+  if(!file){ showToast("Choose a CSV file first.", "err"); return; }
+  const store = importTargetStore;
+  const schema = SCHEMAS[store];
+  const text = await file.text();
+  const rows = parseCsv_(text);
+  if(!rows.length){ showToast("That CSV has no data rows.", "err"); return; }
+  let imported = 0, skipped = 0;
+  const now = new Date().toISOString();
+  for(const row of rows){
+    const missing = schema.fields.some(f=> f.required && !row[f.key]);
+    if(missing){ skipped++; continue; }
+    const recordId = row.recordId || (schema.prefix + "-" + Math.random().toString(36).slice(2,8).toUpperCase());
+    const data = {};
+    schema.fields.forEach(f=> data[f.key] = row[f.key] || "");
+    const record = Object.assign({recordId, createdBy: session.userId, updatedAt: now, dirty:true, deleted:false}, data);
+    await ldbPut(store, record);
+    imported++;
+  }
+  closeImportModal();
+  await renderAll();
+  showToast(`Imported ${imported} record(s)${skipped ? `, skipped ${skipped} (missing required fields)` : ""}.`, imported ? "ok" : "err");
+  syncNow(false);
+}
+
+/* ================= Backup (full JSON / CSV export + restore) ================= */
+async function downloadFullBackupJson(){
+  const stores = ["members","contributions","loans","repayments","dividends"];
+  const backup = { exportedAt: new Date().toISOString(), orgId: session.orgId, orgName: session.orgName, data: {} };
+  for(const s of stores) backup.data[s] = await getVisible(s);
+  downloadText_(`okv-sacco-backup-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(backup, null, 2), "application/json");
+  showToast("Full backup downloaded.", "ok");
+}
+async function downloadFullBackupCsvZip(){
+  // No zip library on this page — download each register as its own CSV
+  // (browsers handle a short burst of downloads fine); the JSON backup
+  // above is the single-file option.
+  const stores = ["members","contributions","loans","repayments","dividends"];
+  for(const s of stores) await exportCsv(s);
+  showToast("Downloaded one CSV per register.", "ok");
+}
+async function restoreFromBackupJson(){
+  const file = document.getElementById("restoreFile").files[0];
+  if(!file){ showToast("Choose a backup JSON file first.", "err"); return; }
+  if(!confirm("This will add/update records from the backup into your organization. Continue?")) return;
+  try{
+    const text = await file.text();
+    const backup = JSON.parse(text);
+    if(!backup.data) throw new Error("That file doesn't look like an OKV SACCO backup.");
+    let total = 0;
+    const now = new Date().toISOString();
+    for(const store of Object.keys(backup.data)){
+      if(!SCHEMAS[store]) continue;
+      for(const rec of backup.data[store]){
+        rec.dirty = true; rec.updatedAt = now; rec.deleted = false;
+        await ldbPut(store, rec);
+        total++;
+      }
+    }
+    await renderAll();
+    showToast(`Restored ${total} record(s) from backup.`, "ok");
+    syncNow(false);
+  }catch(err){ showToast("Restore failed: " + err.message, "err"); }
+}
+
+/* ================= Team Messaging ================= */
+async function loadTeamPicker(){
+  try{
+    const result = await apiCall("listUsers", session);
+    const rows = result.users || [];
+    const picker = document.getElementById("teamMemberPicker");
+    picker.innerHTML = rows.map(u=> `<label class="d-flex align-items-center gap-2 small mb-1">
+      <input type="checkbox" class="team-pick" value="${u.userId}"> ${esc(u.username)} ${u.email ? "("+esc(u.email)+")" : ""}
+    </label>`).join("") || `<div class="small text-muted">No team members yet.</div>`;
+  }catch(e){ /* best-effort */ }
+}
+function toggleTeamPicker(){
+  document.getElementById("teamMemberPicker").style.display =
+    document.getElementById("teamRecipientMode").value === "pick" ? "block" : "none";
+}
+async function sendTeamMessage(){
+  if(!navigator.onLine){ showToast("Connect to the internet to send messages.", "err"); return; }
+  const allUsers = document.getElementById("teamRecipientMode").value === "all";
+  const userIds = Array.from(document.querySelectorAll(".team-pick:checked")).map(el=> el.value);
+  const channels = [];
+  if(document.getElementById("teamChEmail").checked) channels.push("email");
+  if(document.getElementById("teamChSms").checked) channels.push("sms");
+  if(document.getElementById("teamChWhatsapp").checked) channels.push("whatsapp");
+  const subject = document.getElementById("teamMsgSubject").value.trim();
+  const message = document.getElementById("teamMsgBody").value.trim();
+  if(!message){ showToast("Write a message first.", "err"); return; }
+  try{
+    const result = await apiCall("sendTeamMessage", Object.assign({}, session, { subject, message, userIds, allUsers, channels }));
+    showToast(`Sent to ${result.sent} of ${result.recipients} team member(s)${result.failed ? `, ${result.failed} failed` : ""}.`, "ok");
+    document.getElementById("teamMsgBody").value = "";
+    loadMessagesTable();
+  }catch(err){ showToast(err.message, "err"); }
+}
+
+/* ================= Statements tab (view/print/CSV/send, by period) ================= */
+function computeStatementPeriodRange(period){
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  let from, to = now.toISOString().slice(0,10);
+  if(period === "month") from = new Date(y, m, 1).toISOString().slice(0,10);
+  else if(period === "quarter") from = new Date(y, Math.floor(m/3)*3, 1).toISOString().slice(0,10);
+  else if(period === "half") from = new Date(y, m < 6 ? 0 : 6, 1).toISOString().slice(0,10);
+  else if(period === "year") from = new Date(y, 0, 1).toISOString().slice(0,10);
+  else if(period === "all"){ from = ""; to = ""; }
+  return { from, to };
+}
+function applyStatementPeriod(){
+  const period = document.getElementById("stmtPeriod").value;
+  document.getElementById("stmtCustomRange").style.display = period === "custom" ? "flex" : "none";
+  if(period !== "custom"){
+    const { from, to } = computeStatementPeriodRange(period);
+    document.getElementById("stmtFrom2").value = from;
+    document.getElementById("stmtTo2").value = to;
+  }
+}
+async function toggleStatementPicker2(){
+  const mode = document.getElementById("stmtRecipientMode2").value;
+  document.getElementById("stmtIndividualPicker2").style.display = mode === "individual" ? "block" : "none";
+  if(mode === "individual") await loadStatementMemberSelect2();
+}
+async function loadStatementMemberSelect2(){
+  const rows = await getVisible("members");
+  const sel = document.getElementById("stmtMemberSelect2");
+  sel.innerHTML = rows.map(m=> `<option value="${m.recordId}">${esc(m.name)} (${m.recordId})</option>`).join("")
+    || `<option value="">No members yet</option>`;
+}
+async function loadStatementMemberSelect(){ await loadStatementMemberSelect2(); applyStatementPeriod(); }
+async function getStatementTargets_(){
+  const mode = document.getElementById("stmtRecipientMode2").value;
+  const allMembers = await getVisible("members");
+  if(mode === "individual"){
+    const id = document.getElementById("stmtMemberSelect2").value;
+    return allMembers.filter(m=> m.recordId === id);
+  }
+  return allMembers;
+}
+function statementDateRange_(){
+  const period = document.getElementById("stmtPeriod").value;
+  if(period === "custom") return { from: document.getElementById("stmtFrom2").value, to: document.getElementById("stmtTo2").value };
+  return computeStatementPeriodRange(period);
+}
+async function viewStatements(){
+  const targets = await getStatementTargets_();
+  if(!targets.length){ showToast("No members to show a statement for.", "err"); return; }
+  const { from, to } = statementDateRange_();
+  const card = document.getElementById("stmtPreviewCard");
+  const preview = document.getElementById("stmtPreview");
+  card.style.display = "block";
+  preview.innerHTML = "Building statement(s)…";
+  const parts = [];
+  for(const m of targets) parts.push(await buildMemberStatementHtml(m, from, to));
+  preview.innerHTML = parts.join("<hr>");
+}
+async function printStatements(){
+  await viewStatements();
+  const content = document.getElementById("stmtPreview").innerHTML;
+  const w = window.open("", "_blank");
+  w.document.write(`<html><head><title>Statement</title></head><body>${content}</body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(()=> w.print(), 300);
+}
+async function downloadStatementsCsv(){
+  const targets = await getStatementTargets_();
+  if(!targets.length){ showToast("No members to export.", "err"); return; }
+  const { from, to } = statementDateRange_();
+  const [contributions, loans, repayments, dividends] = await Promise.all([
+    getVisible("contributions"), getVisible("loans"), getVisible("repayments"), getVisible("dividends")
+  ]);
+  const lines = ["memberId,name,type,recordId,date,amount,detail"];
+  for(const m of targets){
+    contributions.filter(c=> c.memberId === m.recordId && inRange(c.date, from, to)).forEach(c=>
+      lines.push([m.recordId, csvEscape_(m.name), "contribution", c.recordId, c.date, c.savings, "shares:"+c.shares].join(",")));
+    loans.filter(l=> l.memberId === m.recordId && inRange(l.disbDate, from, to)).forEach(l=>
+      lines.push([m.recordId, csvEscape_(m.name), "loan", l.recordId, l.disbDate, l.amount, "rate:"+l.rate].join(",")));
+    const myLoanIds = loans.filter(l=> l.memberId === m.recordId).map(l=> l.recordId);
+    repayments.filter(r=> myLoanIds.includes(r.loanId) && inRange(r.date, from, to)).forEach(r=>
+      lines.push([m.recordId, csvEscape_(m.name), "repayment", r.recordId, r.date, r.amount, "loan:"+r.loanId].join(",")));
+    dividends.filter(d=> d.memberId === m.recordId && inRange(d.paymentDate, from, to)).forEach(d=>
+      lines.push([m.recordId, csvEscape_(m.name), "dividend", d.recordId, d.paymentDate, "", "year:"+d.year+" rate:"+d.rate].join(",")));
+  }
+  downloadText_(`statements-${new Date().toISOString().slice(0,10)}.csv`, lines.join("\n"));
+}
+
+/* ================= Reports tab (Daily/Weekly/Monthly/Quarterly/Yearly) ================= */
+let reportChartInstance = null;
+function reportPeriodRange_(period){
+  const now = new Date();
+  let from;
+  if(period === "day") from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  else if(period === "week") from = new Date(now.getTime() - 7*24*60*60*1000);
+  else if(period === "month") from = new Date(now.getFullYear(), now.getMonth(), 1);
+  else if(period === "quarter") from = new Date(now.getFullYear(), Math.floor(now.getMonth()/3)*3, 1);
+  else from = new Date(now.getFullYear(), 0, 1);
+  return from;
+}
+async function computeReportData_(){
+  const period = document.getElementById("reportPeriod").value;
+  const from = reportPeriodRange_(period);
+  const stores = ["members","contributions","loans","repayments","dividends"];
+  const dateField = { members:"joinDate", contributions:"date", loans:"disbDate", repayments:"date", dividends:"paymentDate" };
+  const amountField = { contributions:"savings", loans:"amount", repayments:"amount", dividends:"rate" };
+  const out = {};
+  for(const s of stores){
+    const rows = (await getVisible(s)).filter(r=>{
+      const d = r[dateField[s]] ? new Date(r[dateField[s]]) : (r.updatedAt ? new Date(r.updatedAt) : null);
+      return d && d >= from;
+    });
+    out[s] = { count: rows.length, total: rows.reduce((sum,r)=> sum + (Number(r[amountField[s]])||0), 0) };
+  }
+  return out;
+}
+async function renderReports(){
+  const data = await computeReportData_();
+  const summary = document.getElementById("reportSummary");
+  const cards = [
+    ["Members Added", data.members.count, ""],
+    ["Contributions", data.contributions.count, fmtN(data.contributions.total) + " total"],
+    ["Loans Disbursed", data.loans.count, fmtN(data.loans.total) + " total"],
+    ["Repayments", data.repayments.count, fmtN(data.repayments.total) + " total"],
+    ["Dividends", data.dividends.count, ""]
+  ];
+  summary.innerHTML = cards.map(c=> `<div class="col-6 col-md-4"><div class="kpi"><div class="val">${c[1]}</div><div class="lbl">${c[0]}</div>${c[2] ? `<div class="small text-muted mt-1">${c[2]}</div>` : ""}</div></div>`).join("");
+  if(typeof Chart === "undefined") return; // chart library didn't load (offline/blocked) — the numbers above still work fine
+  const ctx = document.getElementById("reportChart");
+  if(reportChartInstance) reportChartInstance.destroy();
+  reportChartInstance = new Chart(ctx, {
+    type: "bar",
+    data: { labels: ["Members","Contributions","Loans","Repayments","Dividends"],
+      datasets: [{ label: "Records in period", data: [data.members.count,data.contributions.count,data.loans.count,data.repayments.count,data.dividends.count],
+        backgroundColor: ["#0D1B2A","#1B6CA8","#F5A623","#22C7A9","#13293D"] }] },
+    options: { responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ precision:0 } } } }
+  });
+}
+function printReport(){
+  const period = document.getElementById("reportPeriod").selectedOptions[0].textContent;
+  const content = document.getElementById("reportSummary").innerHTML;
+  const w = window.open("", "_blank");
+  w.document.write(`<html><head><title>Report — ${period}</title></head><body><h2>Report — ${period}</h2>${content}</body></html>`);
+  w.document.close(); w.focus();
+  setTimeout(()=> w.print(), 300);
+}
+async function downloadReportCsv(){
+  const data = await computeReportData_();
+  const period = document.getElementById("reportPeriod").value;
+  const lines = ["register,count,total", ...Object.keys(data).map(k=> `${k},${data[k].count},${data[k].total}`)];
+  downloadText_(`report-${period}-${new Date().toISOString().slice(0,10)}.csv`, lines.join("\n"));
+}
+
+/* ================= Dashboard charts (real data, refreshed on every render) ================= */
+let dashboardCharts = {};
+function monthLabels_(n){
+  const out = []; const now = new Date();
+  for(let i=n-1;i>=0;i--){ const d = new Date(now.getFullYear(), now.getMonth()-i, 1); out.push(d.toLocaleString(undefined,{month:"short"})); }
+  return out;
+}
+async function renderDashboardCharts(){
+  if(typeof Chart === "undefined") return; // offline on first load before the CDN script cached — charts just skip silently
+  const [members, contributions, loans, repayments] = await Promise.all([
+    getVisible("members"), getVisible("contributions"), getVisible("loans"), getVisible("repayments")
+  ]);
+  const months = monthLabels_(6);
+  const now = new Date();
+  const monthKey = (d)=> { const dt = new Date(d); return dt.getFullYear()+"-"+dt.getMonth(); };
+  const wantedKeys = []; for(let i=5;i>=0;i--){ const d = new Date(now.getFullYear(), now.getMonth()-i, 1); wantedKeys.push(d.getFullYear()+"-"+d.getMonth()); }
+  const sumByMonth = (rows, dateField, amtField)=> wantedKeys.map(k=> rows.filter(r=> r[dateField] && monthKey(r[dateField])===k).reduce((s,r)=> s+(Number(r[amtField])||0),0));
+  const countByMonth = (rows, dateField)=> wantedKeys.map(k=> rows.filter(r=> r[dateField] && monthKey(r[dateField])===k).length);
+
+  const mk = (id, cfg)=>{
+    if(dashboardCharts[id]) dashboardCharts[id].destroy();
+    dashboardCharts[id] = new Chart(document.getElementById(id), cfg);
+  };
+  mk("chartContrib", { type:"line", data:{ labels:months, datasets:[
+      { label:"Savings", data: sumByMonth(contributions,"date","savings"), borderColor:"#1B6CA8", backgroundColor:"rgba(27,108,168,.12)", tension:.35, fill:true },
+      { label:"Shares", data: sumByMonth(contributions,"date","shares"), borderColor:"#22C7A9", backgroundColor:"rgba(34,199,169,.12)", tension:.35, fill:true }
+    ]}, options:{ responsive:true, plugins:{legend:{position:"bottom"}}, scales:{y:{beginAtZero:true}} }});
+  mk("chartLoans", { type:"bar", data:{ labels:months, datasets:[
+      { label:"Disbursed", data: sumByMonth(loans,"disbDate","amount"), backgroundColor:"#F5A623" },
+      { label:"Repaid", data: sumByMonth(repayments,"date","amount"), backgroundColor:"#0D1B2A" }
+    ]}, options:{ responsive:true, plugins:{legend:{position:"bottom"}}, scales:{y:{beginAtZero:true}} }});
+  mk("chartMembers", { type:"line", data:{ labels:months, datasets:[
+      { label:"New Members", data: countByMonth(members,"joinDate"), borderColor:"#13293D", backgroundColor:"rgba(19,41,61,.10)", tension:.35, fill:true }
+    ]}, options:{ responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}} }});
+  const statusCounts = { Active:0, Inactive:0, Pending:0 };
+  members.forEach(m=>{ if(statusCounts[m.status]!==undefined) statusCounts[m.status]++; });
+  mk("chartStatus", { type:"doughnut", data:{ labels:Object.keys(statusCounts), datasets:[{ data:Object.values(statusCounts),
+      backgroundColor:["#22C7A9","#B3261E","#F5A623"] }] }, options:{ responsive:true, plugins:{legend:{position:"bottom"}} }});
+}
+
+/* ---------- sync engine ---------- */
+function updateSyncChip(){
+  const chip = document.getElementById("syncChip");
+  const text = document.getElementById("syncText");
+  if(navigator.onLine){ chip.className = "sync-chip online"; text.textContent = "Online"; }
+  else { chip.className = "sync-chip offline"; text.textContent = "Offline — changes saved locally"; }
+}
+let syncing = false;
+async function syncNow(manual){
+  updateSyncChip();
+  if(!navigator.onLine){ if(manual) showToast("You're offline — changes will sync automatically once connected.", "err"); return; }
+  if(syncing) return;
+  syncing = true;
+  document.getElementById("syncText").textContent = "Syncing…";
+  try{
+    await pushDirty();
+    const pulled = await pullSince();
+    // Refresh the session token for EVERY signed-in user, not just Admins —
+    // otherwise a staff member's session silently expires mid-shift (after
+    // SESSION_HOURS) since nothing else ever renews it.
+    try{
+      const fresh = await apiCall("resumeSession", session);
+      session = Object.assign(session, fresh);
+      await saveSession(session);
+      if(session.isAdmin) renderSubscriptionStatus();
+    }catch(e){ /* session refresh is best-effort — sync itself already succeeded above */ }
+    await renderAll();
+    if(session.isAdmin && document.getElementById("view-users").classList.contains("active")) loadUsersTable();
+    document.getElementById("syncText").textContent = "Synced just now";
+    if(manual) showToast("Sync complete.", "ok");
+    if(pulled > 0) showToast(`${pulled} update(s) received from your team.`, "ok");
+  }catch(err){
+    document.getElementById("syncText").textContent = "Sync failed";
+    showToast("Sync failed: " + err.message, "err");
+  }finally{
+    syncing = false;
+  }
+}
+async function pushDirty(){
+  const records = [];
+  for(const store of Object.keys(SCHEMAS)){
+    const rows = await ldbGetAll(store);
+    rows.filter(r=> r.dirty).forEach(r=>{
+      const {dirty, ...payload} = r;
+      records.push({ recordType: store, recordId: r.recordId, createdBy: r.createdBy, payload, updatedAt: r.updatedAt, deleted: !!r.deleted });
+    });
+  }
+  if(!records.length) return;
+  await apiCall("syncPush", Object.assign({}, session, { records }));
+  for(const store of Object.keys(SCHEMAS)){
+    const rows = await ldbGetAll(store);
+    for(const r of rows){ if(r.dirty){ r.dirty = false; await ldbPut(store, r); } }
+  }
+}
+async function pullSince(){
+  const since = (await getLastSync()) || "1970-01-01T00:00:00.000Z";
+  const result = await apiCall("syncPull", Object.assign({}, session, { since }));
+  let applied = 0;
+  for(const rec of result.records){
+    const store = rec.recordType;
+    if(!SCHEMAS[store]) continue;
+    const local = await ldbGet(store, rec.recordId);
+    if(local && local.dirty) continue; // don't clobber an unsynced local edit
+    const merged = Object.assign({recordId: rec.recordId, createdBy: rec.createdBy, updatedAt: rec.updatedAt, deleted: rec.deleted, dirty:false}, rec.payload);
+    await ldbPut(store, merged);
+    applied++;
+  }
+  await setLastSync(result.serverTime);
+  return applied;
+}
+
+/* ---------- Admin: user management ---------- */
+async function loadUsersTable(){
+  try{
+    const result = await apiCall("listUsers", session);
+    const tbody = document.getElementById("tbl-users");
+    tbody.innerHTML = result.users.map(u=> `<tr>
+      <td>${esc(u.username)}${u.isAdmin ? ' <span class="badge-role">Admin</span>' : ''}</td>
+      <td>${esc(u.email)}</td>
+      <td>${u.roles.map(r=> `<span class="badge-role">${esc(r)}</span>`).join("")}</td>
+      <td><span class="${u.status==='Active' ? 'badge-active' : 'badge-suspended'}">${u.status}</span></td>
+      <td class="text-end">
+        ${u.isAdmin ? "" : `
+        <button class="btn btn-sm btn-outline-secondary" onclick='openEditUserModal(${JSON.stringify(u).replace(/'/g,"&apos;")})'><i class="bi bi-pencil"></i> Edit</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="openSetPassModal('${u.userId}','${esc(u.username)}')"><i class="bi bi-key"></i></button>
+        <button class="btn btn-sm ${u.status==='Active' ? 'btn-outline-warning' : 'btn-outline-success'}" onclick="toggleUserStatus('${u.userId}','${u.status}')">
+          ${u.status==='Active' ? '<i class="bi bi-slash-circle"></i> Suspend' : '<i class="bi bi-check-circle"></i> Activate'}
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.userId}')"><i class="bi bi-trash"></i></button>`}
+      </td></tr>`).join("");
+  }catch(err){
+    showToast("Could not load users: " + err.message, "err");
+  }
+}
+function roleCheckboxes(selected){
+  selected = selected || [];
+  return ROLES.map(r=> `<label class="role-check"><input type="checkbox" value="${r}" ${selected.includes(r)?"checked":""}> ${r}</label>`).join("");
+}
+function openAddUserModal(){
+  document.getElementById("userModalTitle").textContent = "Add User";
+  document.getElementById("userModalPasswordField").style.display = "";
+  document.getElementById("umUsername").disabled = false;
+  document.getElementById("umUsername").value = ""; document.getElementById("umEmail").value = "";
+  document.getElementById("umFullName").value = ""; document.getElementById("umPhone").value = "";
+  document.getElementById("umPassword").value = "";
+  document.getElementById("umRoles").innerHTML = roleCheckboxes([]);
+  document.getElementById("userModalOverlay").dataset.mode = "create";
+  document.getElementById("userModalOverlay").classList.add("show");
+}
+function openEditUserModal(user){
+  document.getElementById("userModalTitle").textContent = "Edit User — " + user.username;
+  document.getElementById("userModalPasswordField").style.display = "none";
+  document.getElementById("umUsername").disabled = false;
+  document.getElementById("umUsername").value = user.username || "";
+  document.getElementById("umEmail").value = user.email || "";
+  document.getElementById("umFullName").value = user.fullName || "";
+  document.getElementById("umPhone").value = user.phone || "";
+  document.getElementById("umRoles").innerHTML = roleCheckboxes(user.roles);
+  document.getElementById("userModalOverlay").dataset.mode = "editUser";
+  document.getElementById("userModalOverlay").dataset.userId = user.userId;
+  document.getElementById("userModalOverlay").classList.add("show");
+}
+function closeUserModal(){ document.getElementById("userModalOverlay").classList.remove("show"); }
+async function saveUserModal(){
+  if(!navigator.onLine){ showToast("Connect to the internet to manage users.", "err"); return; }
+  const overlay = document.getElementById("userModalOverlay");
+  const roles = Array.from(document.querySelectorAll("#umRoles input:checked")).map(c=> c.value);
+  const username = document.getElementById("umUsername").value.trim();
+  const email = document.getElementById("umEmail").value.trim();
+  const fullName = document.getElementById("umFullName").value.trim();
+  const phone = document.getElementById("umPhone").value.trim();
+  try{
+    if(overlay.dataset.mode === "create"){
+      const password = document.getElementById("umPassword").value;
+      if(!username || !password){ showToast("Username and password are required.", "err"); return; }
+      const passwordHash = await sha256(password);
+      await apiCall("createUser", Object.assign({}, session, { username, email, fullName, phone, passwordHash, roles }));
+      showToast("User created.", "ok");
+    } else {
+      if(!username){ showToast("Username is required.", "err"); return; }
+      await apiCall("updateUser", Object.assign({}, session, { userId: overlay.dataset.userId, username, email, fullName, phone, roles }));
+      showToast("User updated.", "ok");
+    }
+    closeUserModal();
+    loadUsersTable();
+  }catch(err){
+    showToast(err.message, "err");
+  }
+}
+async function toggleUserStatus(userId, currentStatus){
+  if(!navigator.onLine){ showToast("Connect to the internet to manage users.", "err"); return; }
+  try{
+    await apiCall("setUserStatus", Object.assign({}, session, { userId, status: currentStatus === "Active" ? "Suspended" : "Active" }));
+    showToast("User status updated.", "ok");
+    loadUsersTable();
+  }catch(err){ showToast(err.message, "err"); }
+}
+async function deleteUser(userId){
+  if(!confirm("Remove this user? They will lose access immediately.")) return;
+  if(!navigator.onLine){ showToast("Connect to the internet to manage users.", "err"); return; }
+  try{
+    await apiCall("deleteUser", Object.assign({}, session, { userId }));
+    showToast("User removed.", "ok");
+    loadUsersTable();
+  }catch(err){ showToast(err.message, "err"); }
+}
+function openSetPassModal(userId, username){
+  document.getElementById("setPassUsername").textContent = username;
+  document.getElementById("setPassValue").value = "";
+  document.getElementById("setPassOverlay").dataset.userId = userId;
+  document.getElementById("setPassOverlay").classList.add("show");
+}
+function closeSetPassModal(){ document.getElementById("setPassOverlay").classList.remove("show"); }
+async function saveSetPassModal(){
+  if(!navigator.onLine){ showToast("Connect to the internet to set a password.", "err"); return; }
+  const userId = document.getElementById("setPassOverlay").dataset.userId;
+  const pass = document.getElementById("setPassValue").value;
+  if(pass.length < 6){ showToast("Password must be at least 6 characters.", "err"); return; }
+  try{
+    const newPasswordHash = await sha256(pass);
+    await apiCall("setUserPassword", Object.assign({}, session, { userId, newPasswordHash }));
+    showToast("Password updated for that user.", "ok");
+    closeSetPassModal();
+  }catch(err){ showToast(err.message, "err"); }
+}
+
+/* ---------- install link ----------
+   Bug fix: the old version only offered "Copy Link" via navigator.clipboard
+   with no error handling — on any browser/context that blocks clipboard
+   access (common in webviews, non-HTTPS previews, or denied permissions)
+   the click did nothing at all with zero feedback, which is exactly what
+   "the share link isn't working" describes. Now: a real Web Share sheet
+   where supported, direct WhatsApp/Email share links as a fallback, and a
+   copy path that always gives feedback — success or a manual-select
+   fallback — instead of failing silently. */
+function buildInstallLinkUI(){
+  // Robust against odd URL shapes (query strings, no "dashboard.html" in
+  // the path, trailing slashes) — falls back to origin + /install.html
+  // rather than silently producing a broken link.
+  let installUrl;
+  const href = window.location.href;
+  if(/dashboard\.html/.test(href)){
+    installUrl = href.replace(/dashboard\.html.*$/, "install.html");
+  } else {
+    installUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, "") + "install.html";
+  }
+  document.getElementById("installLinkBox").textContent = installUrl;
+  document.getElementById("waShareLink").href = "https://wa.me/?text=" + encodeURIComponent(
+    `Install ${session.orgName || "our"} SACCO app here: ${installUrl}`);
+  document.getElementById("emailShareLink").href = "mailto:?subject=" + encodeURIComponent("Install the app") +
+    "&body=" + encodeURIComponent(`Install the app here: ${installUrl}\n\nAfter installing, sign in with the username and password given to you separately.`);
+  if(!navigator.share) document.getElementById("shareInstallBtn").style.display = "none";
+}
+function shareInstallLink(){
+  const text = document.getElementById("installLinkBox").textContent;
+  if(navigator.share){
+    navigator.share({ title: "Install the app", text: `Install ${session.orgName || "our"} SACCO app`, url: text })
+      .catch(()=>{ /* user cancelled — not an error */ });
+  }
+}
+function copyInstallLink(){
+  const text = document.getElementById("installLinkBox").textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text)
+      .then(()=> showToast("Install link copied.", "ok"))
+      .catch(()=> fallbackCopyInstallLink_(text));
+  } else {
+    fallbackCopyInstallLink_(text);
+  }
+}
+function fallbackCopyInstallLink_(text){
+  try{
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    showToast(ok ? "Install link copied." : "Couldn't copy automatically — please select and copy the link above.", ok ? "ok" : "err");
+  }catch(e){
+    showToast("Couldn't copy automatically — please select and copy the link above.", "err");
+  }
+}
+
+/* ---------- my account ---------- */
+async function changeOwnPassword(){
+  if(!navigator.onLine){ showToast("Connect to the internet to change your password.", "err"); return; }
+  const cur = document.getElementById("curPass").value;
+  const n1 = document.getElementById("newPass").value;
+  const n2 = document.getElementById("confPass").value;
+  if(n1 !== n2){ showToast("New passwords do not match.", "err"); return; }
+  if(n1.length < 6){ showToast("New password must be at least 6 characters.", "err"); return; }
+  try{
+    const currentPasswordHash = await sha256(cur);
+    const newPasswordHash = await sha256(n1);
+    await apiCall("changePassword", Object.assign({}, session, { currentPasswordHash, newPasswordHash }));
+    showToast("Password updated.", "ok");
+    document.getElementById("curPass").value = ""; document.getElementById("newPass").value = ""; document.getElementById("confPass").value = "";
+  }catch(err){ showToast(err.message, "err"); }
+}
+
+/* ---------- logout ---------- */
+async function logout(){
+  await clearSession();
+  window.location.href = "login.html";
+}
+</script>
+</body>
+</html>

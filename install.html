@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Install OKV SACCO Subscribe</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D1B2A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="OKV Subscribe">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  :root{ --navy:#0D1B2A; --navy-2:#13293D; --teal:#1B6CA8; --teal-2:#22C7A9; --muted:#6B7C93; }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:linear-gradient(160deg,var(--navy),var(--navy-2));color:#fff;
+    display:flex;flex-direction:column;align-items:center;padding:36px 18px 28px;}
+  .logo{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--teal-2),var(--teal));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:23px;letter-spacing:-.5px;font-weight:700;margin-bottom:16px;
+    box-shadow:0 0 0 0 rgba(34,199,169,.5);animation:pulse 2.2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,199,169,.45);}70%{box-shadow:0 0 0 16px rgba(34,199,169,0);}100%{box-shadow:0 0 0 0 rgba(34,199,169,0);}}
+  h1{font-size:20px;margin:0 0 6px;text-align:center;}
+  p.tagline{color:#A9CCE3;font-size:13.5px;margin:0 0 22px;max-width:380px;text-align:center;}
+  .install-card{background:#fff;color:var(--navy);width:100%;max-width:460px;border-radius:18px;padding:22px;box-shadow:0 14px 40px rgba(0,0,0,.3);margin-bottom:16px;}
+  .install-card h2{font-size:15px;margin:0 0 4px;font-weight:700;}
+  .install-card p.desc{font-size:12.5px;color:var(--muted);margin:0 0 16px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 18px;border-radius:10px;border:none;font-weight:700;font-size:14.5px;cursor:pointer;text-decoration:none;}
+  .btn-install{background:var(--teal-2);color:#fff;}
+  .btn-install:disabled{opacity:.55;}
+  .btn-open{background:var(--navy);color:#fff;margin-top:10px;display:none;}
+  .device-tabs{display:flex;gap:6px;margin:20px 0 4px;width:100%;max-width:460px;}
+  .device-tab{flex:1;text-align:center;padding:9px 6px;border-radius:10px;font-size:12px;font-weight:700;background:rgba(255,255,255,.07);color:#A9CCE3;cursor:pointer;}
+  .device-tab.active{background:#fff;color:var(--navy);}
+  .device-tab .badge-here{display:block;font-size:9.5px;font-weight:600;color:var(--teal-2);margin-top:2px;}
+  .device-tab.active .badge-here{color:var(--teal);}
+  .instructions{background:#fff;color:var(--navy);width:100%;max-width:460px;border-radius:16px;padding:20px 22px;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+  .instructions h3{font-size:14px;margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+  .instructions ol{margin:0;padding-left:20px;font-size:13px;line-height:1.65;color:#33445A;}
+  .instructions .panel{display:none;} .instructions .panel.active{display:block;}
+  .foot{margin-top:22px;font-size:11px;color:#7F97B3;text-align:center;}
+</style>
+</head>
+<body>
+  <div class="logo" id="brandMark">OKV</div>
+  <img id="brandLogoImg" style="display:none;width:72px;height:72px;border-radius:18px;object-fit:cover;margin-bottom:16px;" alt="Logo">
+  <h1><span class="brand-name">OKV SACCO</span> — Subscribe</h1>
+  <p class="tagline">Install this app, then sign in with the username your Admin gave you. It works online and offline, syncing automatically when you're connected.</p>
+
+  <div class="install-card">
+    <h2><i class="bi bi-box-seam"></i> Install the app</h2>
+    <p class="desc">Tap Install below (Android / Windows / Mac), or follow the steps for your device further down.</p>
+    <button class="btn btn-install" id="installBtn" disabled><i class="bi bi-download"></i> Install App</button>
+    <a class="btn btn-open" id="openAppBtn" href="login.html"><i class="bi bi-box-arrow-up-right"></i> Continue to Sign In</a>
+  </div>
+
+  <div class="device-tabs">
+    <div class="device-tab" data-target="android"><span>Android</span><span class="badge-here" id="badgeAndroid"></span></div>
+    <div class="device-tab" data-target="ios"><span>iPhone / iPad</span><span class="badge-here" id="badgeIOS"></span></div>
+    <div class="device-tab" data-target="desktop"><span>Windows / Mac</span><span class="badge-here" id="badgeDesktop"></span></div>
+  </div>
+  <div class="instructions">
+    <div class="panel" data-panel="android">
+      <h3><i class="bi bi-phone text-primary"></i> Install on Android</h3>
+      <ol><li>Open this link in <b>Chrome</b>.</li><li>Tap <b>Install App</b> above.</li><li>Confirm <b>Install</b> on the prompt.</li><li>Open the app icon from your home screen, then sign in.</li></ol>
+    </div>
+    <div class="panel" data-panel="ios">
+      <h3><i class="bi bi-apple text-primary"></i> Install on iPhone / iPad</h3>
+      <ol><li>Open this link in <b>Safari</b> (not Chrome).</li><li>Tap the <b>Share</b> icon <i class="bi bi-box-arrow-up"></i>.</li><li>Tap <b>“Add to Home Screen”</b>, then <b>Add</b>.</li><li>Open the app icon from your home screen, then sign in.</li></ol>
+    </div>
+    <div class="panel" data-panel="desktop">
+      <h3><i class="bi bi-laptop text-primary"></i> Install on Windows / Mac</h3>
+      <ol><li>Open this link in <b>Chrome</b> or <b>Edge</b>.</li><li>Tap <b>Install App</b> above, or click the install icon in the address bar.</li><li>Click <b>Install</b> to confirm.</li><li>Open the app from your desktop, then sign in.</li></ol>
+    </div>
+  </div>
+  <p class="foot">Developed by: <strong>OKV Technology Consults</strong> · <a href="privacy-policy.html" style="color:#7F97B3;">Privacy</a> · <a href="terms-of-service.html" style="color:#7F97B3;">Terms</a></p>
+
+<script src="config.js"></script>
+<script>
+  loadPlatformSettings().then(applyBranding);
+
+  function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+  function isAndroid(){ return /android/i.test(navigator.userAgent); }
+  function isInStandaloneMode(){
+    return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+           (("standalone" in window.navigator) && window.navigator.standalone);
+  }
+  if(isInStandaloneMode()){ window.location.replace("login.html"); }
+
+  const tabs = document.querySelectorAll(".device-tab");
+  const panels = document.querySelectorAll(".instructions .panel");
+  function selectDevice(key){
+    tabs.forEach(t=> t.classList.toggle("active", t.dataset.target===key));
+    panels.forEach(p=> p.classList.toggle("active", p.dataset.panel===key));
+  }
+  tabs.forEach(t=> t.addEventListener("click", ()=> selectDevice(t.dataset.target)));
+  const detected = isIOS() ? "ios" : (isAndroid() ? "android" : "desktop");
+  selectDevice(detected);
+  const badgeMap = {android:"badgeAndroid", ios:"badgeIOS", desktop:"badgeDesktop"};
+  document.getElementById(badgeMap[detected]).textContent = "Your device";
+
+  const installBtn = document.getElementById("installBtn");
+  const openAppBtn = document.getElementById("openAppBtn");
+  let deferredPrompt = null;
+  window.addEventListener("beforeinstallprompt", (e)=>{
+    e.preventDefault(); deferredPrompt = e; installBtn.disabled = false;
+  });
+  installBtn.addEventListener("click", async ()=>{
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  });
+  window.addEventListener("appinstalled", ()=>{
+    installBtn.style.display = "none";
+    openAppBtn.style.display = "flex";
+    setTimeout(()=>{ window.location.href = "login.html"; }, 1200);
+  });
+  if(isIOS() && !isInStandaloneMode()){ installBtn.style.display = "none"; }
+
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js").catch(err=> console.error("SW registration failed:", err));
+  }
+</script>
+</body>
+</html>

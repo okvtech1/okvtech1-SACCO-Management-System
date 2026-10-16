@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Your Account — OKV SACCO Subscribe</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  :root{ --navy:#0D1B2A; --navy-2:#13293D; --teal:#1B6CA8; --teal-2:#22C7A9; --muted:#6B7C93; }
+  *{box-sizing:border-box;}
+  body{margin:0;min-height:100vh;font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:linear-gradient(160deg,var(--navy),var(--navy-2));display:flex;align-items:center;justify-content:center;padding:24px;}
+  .card{background:#fff;border-radius:18px;padding:28px;max-width:440px;width:100%;box-shadow:0 14px 40px rgba(0,0,0,.3);}
+  .logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--teal-2),var(--teal));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:17px;letter-spacing:-.5px;margin-bottom:14px;}
+  h1{font-size:18px;margin:0 0 4px;color:var(--navy);}
+  p.sub{font-size:12.5px;color:var(--muted);margin:0 0 16px;}
+  .plan-chip{background:var(--paper,#F4F7FC);border:1px solid #E3E9F2;border-radius:12px;padding:12px 14px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;}
+  .plan-chip .name{font-weight:700;color:var(--navy);font-size:13.5px;}
+  .plan-chip .price{font-weight:700;color:var(--teal);font-size:13.5px;}
+  .plan-chip .cycle{font-size:11px;color:var(--muted);}
+  label{font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:4px;display:block;}
+  input{width:100%;padding:10px 12px;border-radius:9px;border:1px solid #DCE3EE;margin-bottom:14px;font-size:14px;}
+  input:focus{outline:none;border-color:var(--teal-2);}
+  .btn{width:100%;padding:12px;border-radius:10px;border:none;font-weight:700;font-size:14.5px;cursor:pointer;margin-bottom:10px;}
+  .btn-teal{background:var(--teal-2);color:#fff;} .btn-teal:hover{background:var(--teal);}
+  .btn-secondary{background:#EEF2F8;color:var(--navy);}
+  .err{background:#FDECEC;color:#B3261E;font-size:12.5px;padding:9px 12px;border-radius:8px;margin-bottom:14px;display:none;}
+  .ok{background:#E7F8F3;color:#0C7A5E;font-size:12.5px;padding:14px;border-radius:10px;display:none;line-height:1.6;}
+  .ok code{background:#fff;padding:2px 6px;border-radius:5px;}
+  .foot-link{text-align:center;font-size:12.5px;color:var(--muted);margin-top:6px;}
+  .foot-link a{color:var(--teal);font-weight:600;text-decoration:none;}
+  .trial-note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:2px;}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo" id="brandMark">OKV</div>
+    <img id="brandLogoImg" style="display:none;width:52px;height:52px;border-radius:14px;object-fit:cover;margin-bottom:14px;" alt="Logo">
+    <h1>Create your account</h1>
+    <p class="sub">You'll be the Admin of your organization — start your 7-day free trial now.</p>
+
+    <div class="plan-chip" id="planChip" style="display:none;">
+      <div><div class="name" id="planName"></div><div class="cycle" id="planCycle"></div></div>
+      <div class="price" id="planPrice"></div>
+    </div>
+
+    <div class="err" id="errBox"></div>
+    <form id="signupForm">
+      <label>Organization / Business Name</label>
+      <input type="text" id="orgName" required>
+      <label>Full Name</label>
+      <input type="text" id="fullName" required>
+      <label>Email</label>
+      <input type="email" id="email" required>
+      <label>Phone Number</label>
+      <input type="tel" id="phone" required>
+      <label>Password</label>
+      <input type="password" id="password" minlength="6" required>
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:16px;">
+        <input type="checkbox" id="agreeTerms" required style="width:auto;margin:3px 0 0;">
+        <label for="agreeTerms" style="font-size:12px;font-weight:400;margin:0;color:var(--muted);">
+          I agree to the <a href="terms-of-service.html" target="_blank">Terms of Service</a> and <a href="privacy-policy.html" target="_blank">Privacy Policy</a>, including how member data my organization enters is processed.
+        </label>
+      </div>
+      <button class="btn btn-teal" type="submit" id="submitBtn">Create Account</button>
+      <button class="btn btn-secondary" type="button" onclick="location.href='pricing.html'">Back to Pricing</button>
+    </form>
+    <div class="trial-note"><i class="bi bi-clock-history"></i> Your 7-day free trial starts the moment you create your account.</div>
+
+    <div class="ok" id="okBox"></div>
+    <div class="foot-link">Already have an account? <a href="login.html">Sign in</a></div>
+    <div class="foot-link" style="margin-top:4px;"><a href="privacy-policy.html">Privacy</a> · <a href="terms-of-service.html">Terms</a></div>
+  </div>
+
+<script src="config.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const planId = params.get("plan");
+  function renderPlanChip(){
+    const plan = planId ? findPlan(planId) : null;
+    if(plan){
+      document.getElementById("planChip").style.display = "flex";
+      document.getElementById("planName").textContent = plan.name + " Plan";
+      document.getElementById("planCycle").textContent = plan.cycle + " billing";
+      document.getElementById("planPrice").textContent = "₦" + plan.price.toLocaleString();
+    }
+  }
+  renderPlanChip(); // fallback catalogue, shown instantly
+  loadPlans().then(renderPlanChip); // refresh with the live catalogue once it arrives
+  loadPlatformSettings().then(applyBranding);
+
+  const form = document.getElementById("signupForm");
+  const errBox = document.getElementById("errBox");
+  const okBox = document.getElementById("okBox");
+  const submitBtn = document.getElementById("submitBtn");
+  function showError(msg){ errBox.textContent = msg; errBox.style.display = "block"; }
+
+  form.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    errBox.style.display = "none";
+    const orgName = document.getElementById("orgName").value.trim();
+    const fullName = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value;
+    const agreed = document.getElementById("agreeTerms").checked;
+
+    if(!agreed){ showError("Please agree to the Terms of Service and Privacy Policy to continue."); return; }
+    if(!navigator.onLine){ showError("You need an internet connection to create an account."); return; }
+    submitBtn.disabled = true; submitBtn.textContent = "Creating…";
+    try{
+      const passwordHash = await sha256(password);
+      const currentPlan = planId ? findPlan(planId) : null;
+      const result = await apiCall("signup", {
+        orgName, fullName, email, phone, passwordHash,
+        plan: currentPlan ? currentPlan.id : "", billingCycle: currentPlan ? currentPlan.cycle : ""
+      });
+      form.style.display = "none";
+      document.getElementById("planChip").style.display = "none";
+      okBox.innerHTML = `<i class="bi bi-check-circle-fill"></i> Account created — your 7-day free trial has started!<br>
+        Organization ID: <code>${result.orgId}</code><br>
+        A confirmation email is on its way. Next, install the app on your device.<br><br>
+        <a href="install.html" style="color:#0C7A5E;font-weight:700;">Continue to Install →</a>`;
+      okBox.style.display = "block";
+      setTimeout(()=>{ window.location.href = "install.html"; }, 2500);
+    }catch(err){
+      showError(err.message);
+    }finally{
+      submitBtn.disabled = false; submitBtn.textContent = "Create Account";
+    }
+  });
+</script>
+</body>
+</html>

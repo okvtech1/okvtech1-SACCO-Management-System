@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — OKV SACCO Subscribe</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D1B2A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  :root{ --navy:#0D1B2A; --navy-2:#13293D; --teal:#1B6CA8; --teal-2:#22C7A9; --muted:#6B7C93; }
+  *{box-sizing:border-box;}
+  body{margin:0;min-height:100vh;font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:linear-gradient(160deg,var(--navy),var(--navy-2));display:flex;align-items:center;justify-content:center;padding:24px;}
+  .card{background:#fff;border-radius:18px;padding:28px;max-width:400px;width:100%;box-shadow:0 14px 40px rgba(0,0,0,.3);}
+  .logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--teal-2),var(--teal));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:17px;letter-spacing:-.5px;margin-bottom:14px;}
+  h1{font-size:18px;margin:0 0 4px;color:var(--navy);}
+  p.sub{font-size:12.5px;color:var(--muted);margin:0 0 20px;}
+  label{font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:4px;display:block;}
+  input{width:100%;padding:10px 12px;border-radius:9px;border:1px solid #DCE3EE;margin-bottom:14px;font-size:14px;}
+  input:focus{outline:none;border-color:var(--teal-2);}
+  .btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--teal-2);color:#fff;font-weight:700;font-size:14.5px;cursor:pointer;}
+  .btn:hover{background:var(--teal);}
+  .btn:disabled{opacity:.55;cursor:not-allowed;}
+  .link-row{display:flex;justify-content:space-between;font-size:12.5px;margin:-4px 0 16px;}
+  .link-row a{color:var(--teal);font-weight:600;text-decoration:none;cursor:pointer;}
+  .err{background:#FDECEC;color:#B3261E;font-size:12.5px;padding:9px 12px;border-radius:8px;margin-bottom:14px;display:none;}
+  .ok{background:#E7F8F3;color:#0C7A5E;font-size:12.5px;padding:9px 12px;border-radius:8px;margin-bottom:14px;display:none;}
+  .offline-note{background:#FFF6E5;color:#8A5A00;font-size:12px;padding:9px 12px;border-radius:8px;margin-bottom:14px;display:none;}
+  .foot-link{text-align:center;font-size:12.5px;color:var(--muted);margin-top:16px;}
+  .foot-link a{color:var(--teal);font-weight:600;text-decoration:none;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(13,27,42,.6);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:16px;padding:22px;max-width:380px;width:100%;}
+  .modal h3{font-size:15px;margin:0 0 10px;color:var(--navy);}
+  .modal p{font-size:12.5px;color:var(--muted);margin:0 0 14px;}
+  .modal-actions{display:flex;gap:8px;margin-top:6px;}
+  .btn-secondary{background:#EEF2F8;color:var(--navy);}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo" id="brandMark">OKV</div>
+    <img id="brandLogoImg" style="display:none;width:52px;height:52px;border-radius:14px;object-fit:cover;margin-bottom:14px;" alt="Logo">
+    <h1>Sign in to <span class="brand-name">OKV SACCO</span></h1>
+    <p class="sub">Multi-user online workspace — your data syncs across your team.</p>
+
+    <div class="offline-note" id="offlineNote"><i class="bi bi-wifi-off"></i> You're offline. If you've signed in before on this device you'll resume automatically; otherwise connect to the internet to sign in for the first time.</div>
+    <div class="err" id="errBox"></div>
+    <div class="ok" id="okBox"></div>
+
+    <form id="loginForm">
+      <label>Username or Email</label>
+      <input type="text" id="username" required placeholder="Your email (Admin) or username (staff)">
+      <label>Password</label>
+      <input type="password" id="password" required>
+      <div class="link-row">
+        <span></span>
+        <a onclick="openForgot()">Forgot password?</a>
+      </div>
+      <button class="btn" type="submit" id="loginBtn">Sign In</button>
+    </form>
+
+    <div class="foot-link">New organization? <a href="signup.html">Create an account</a></div>
+    <div class="foot-link" style="margin-top:4px;"><a href="privacy-policy.html">Privacy</a> · <a href="terms-of-service.html">Terms</a></div>
+  </div>
+
+  <div class="modal-overlay" id="forgotOverlay">
+    <div class="modal">
+      <h3>Reset your password</h3>
+      <p>Enter the email you signed up with — if it matches an account, we'll email a reset link that's valid for 1 hour.</p>
+      <input type="text" id="forgotUsername" placeholder="Email">
+      <div class="err" id="forgotErr" style="display:none;"></div>
+      <div class="ok" id="forgotOk" style="display:none;"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeForgot()" type="button">Cancel</button>
+        <button class="btn" id="forgotSendBtn" onclick="sendForgot()" type="button">Send Reset Link</button>
+      </div>
+    </div>
+  </div>
+
+<script src="config.js"></script>
+<script src="db.js"></script>
+<script>
+  const errBox = document.getElementById("errBox");
+  const okBox = document.getElementById("okBox");
+  const offlineNote = document.getElementById("offlineNote");
+  const loginBtn = document.getElementById("loginBtn");
+
+  function showError(msg){ errBox.textContent = msg; errBox.style.display = "block"; okBox.style.display = "none"; }
+  function updateOfflineNote(){ offlineNote.style.display = navigator.onLine ? "none" : "block"; }
+  window.addEventListener("online", updateOfflineNote);
+  window.addEventListener("offline", updateOfflineNote);
+  updateOfflineNote();
+
+  async function tryResumeSession(){
+    const session = await loadSession();
+    if(!session || session.cleared) return false;
+    if(navigator.onLine){
+      // refresh session quietly in the background; don't block entry on it
+      apiCall("resumeSession", session).then(fresh=> saveSession(fresh)).catch(()=>{ /* keep cached session, sync will re-auth later */ });
+    }
+    window.location.replace(session.isSuperAdmin ? "super-admin.html" : "dashboard.html");
+    return true;
+  }
+  tryResumeSession();
+
+  document.getElementById("loginForm").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    errBox.style.display = "none";
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    if(!navigator.onLine){ showError("Connect to the internet to sign in for the first time on this device."); return; }
+    loginBtn.disabled = true; loginBtn.textContent = "Signing in…";
+    try{
+      const passwordHash = await sha256(password);
+      const session = await apiCall("login", { username, passwordHash });
+      await saveSession(session);
+      window.location.href = session.isSuperAdmin ? "super-admin.html" : "dashboard.html";
+    }catch(err){
+      showError(err.message);
+    }finally{
+      loginBtn.disabled = false; loginBtn.textContent = "Sign In";
+    }
+  });
+
+  function openForgot(){
+    document.getElementById("forgotErr").style.display = "none";
+    document.getElementById("forgotOk").style.display = "none";
+    document.getElementById("forgotUsername").value = "";
+    document.getElementById("forgotOverlay").classList.add("show");
+  }
+  function closeForgot(){ document.getElementById("forgotOverlay").classList.remove("show"); }
+  async function sendForgot(){
+    const username = document.getElementById("forgotUsername").value.trim();
+    const errEl = document.getElementById("forgotErr");
+    const okEl = document.getElementById("forgotOk");
+    errEl.style.display = "none"; okEl.style.display = "none";
+    if(!username){ errEl.textContent = "Enter your username or email."; errEl.style.display = "block"; return; }
+    if(!navigator.onLine){ errEl.textContent = "Connect to the internet to request a reset link."; errEl.style.display = "block"; return; }
+    const btn = document.getElementById("forgotSendBtn");
+    btn.disabled = true; btn.textContent = "Sending…";
+    try{
+      const resetBaseUrl = window.location.origin + window.location.pathname.replace("login.html", "reset-password.html");
+      await apiCall("forgotPassword", { username, resetBaseUrl });
+      okEl.textContent = "If that account exists, a reset link has been emailed. Check your inbox.";
+      okEl.style.display = "block";
+    }catch(err){
+      errEl.textContent = err.message; errEl.style.display = "block";
+    }finally{
+      btn.disabled = false; btn.textContent = "Send Reset Link";
+    }
+  }
+
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js").catch(err=> console.error("SW registration failed:", err));
+  }
+  loadPlatformSettings().then(applyBranding);
+</script>
+</body>
+</html>

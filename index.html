@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKV SACCO Subscribe — Modern SACCO Management, Online &amp; Offline</title>
+<meta name="description" content="OKV SACCO Subscribe helps Nigerian cooperative societies manage members, contributions, loans, repayments and dividends in one app — online or fully offline. Start a free 7-day trial.">
+<link rel="canonical" href="https://www.okvtechnology.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OKV SACCO Subscribe — Modern SACCO Management, Online & Offline">
+<meta property="og:description" content="Manage members, contributions, loans, repayments and dividends in one app built for Nigerian cooperative societies. Works online and offline.">
+<meta property="og:url" content="https://www.okvtechnology.com/">
+<meta property="og:image" content="https://www.okvtechnology.com/icons/icon-512.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OKV SACCO Subscribe — Modern SACCO Management, Online & Offline">
+<meta name="twitter:description" content="Manage members, contributions, loans, repayments and dividends in one app built for Nigerian cooperative societies. Works online and offline.">
+<meta name="twitter:image" content="https://www.okvtechnology.com/icons/icon-512.png">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  :root{ --navy:#0D1B2A; --navy-2:#13293D; --teal:#1B6CA8; --teal-2:#22C7A9; --gold:#F5A623; --paper:#F4F7FC; --muted:#6B7C93; }
+  *{box-sizing:border-box;} html{scroll-behavior:smooth;}
+  body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;color:#1E2A3A;background:#fff;}
+  a{text-decoration:none;}
+  .container{max-width:1080px;margin:0 auto;padding:0 20px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:10px;font-weight:700;font-size:14px;border:none;cursor:pointer;}
+  .btn-primary{background:var(--teal-2);color:#fff;} .btn-primary:hover{background:var(--teal);}
+  .btn-outline{background:transparent;border:1.5px solid #fff;color:#fff;}
+  .btn-outline:hover{background:rgba(255,255,255,.1);}
+  .btn-navy{background:var(--navy);color:#fff;} .btn-navy:hover{background:var(--navy-2);}
+  .btn-gold{background:var(--gold);color:#fff;}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:50;background:rgba(13,27,42,.96);backdrop-filter:blur(6px);}
+  .navwrap{display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
+  .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;}
+  .brand .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--teal-2),var(--teal));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;letter-spacing:-.5px;color:#fff;}
+  nav.links{display:flex;gap:22px;}
+  nav.links a{color:#B9C7DA;font-size:13.5px;font-weight:600;}
+  nav.links a:hover{color:#fff;}
+  .navcta{display:flex;gap:10px;}
+  .hamburger-btn{display:none;background:transparent;border:1px solid #2C4054;border-radius:9px;width:38px;height:38px;color:#fff;font-size:17px;align-items:center;justify-content:center;}
+  .mobile-nav{display:none;flex-direction:column;gap:2px;background:var(--navy-2);padding:10px 20px 16px;}
+  .mobile-nav.open{display:flex;}
+  .mobile-nav a{color:#B9C7DA;font-size:14px;font-weight:600;padding:10px 4px;border-bottom:1px solid rgba(255,255,255,.06);}
+  .mobile-nav a:hover{color:#fff;}
+  .mobile-nav .navcta{flex-direction:column;margin-top:10px;}
+  @media(max-width:860px){
+    nav.links{display:none;}
+    .navcta .btn-outline{display:none;}
+    .hamburger-btn{display:flex;}
+  }
+
+  /* hero */
+  .hero{background:linear-gradient(160deg,var(--navy),var(--navy-2));color:#fff;padding:70px 0 60px;text-align:center;}
+  .hero h1{font-size:34px;font-weight:800;margin:0 0 14px;line-height:1.25;}
+  .hero h1 span{color:var(--teal-2);}
+  .hero p.lead{color:#A9CCE3;font-size:15.5px;max-width:600px;margin:0 auto 26px;}
+  .hero .ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;}
+  .hero .trust{font-size:12.5px;color:#8FB4D6;}
+  .hero .trust i{color:var(--teal-2);margin-right:5px;}
+
+  section{padding:64px 0;}
+  .section-tag{font-size:11.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
+  h2.section-title{font-size:25px;margin:0 0 10px;color:var(--navy);}
+  p.section-sub{color:var(--muted);font-size:14px;max-width:620px;margin:0 0 34px;}
+
+  .grid{display:grid;gap:18px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);} .grid-3{grid-template-columns:repeat(3,1fr);} .grid-4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:760px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
+  .card{background:#fff;border:1px solid #EEF2F8;border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(20,40,70,.05);}
+  .card i.big{font-size:22px;color:var(--teal-2);background:#EAF6F3;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .card h3{font-size:15px;margin:0 0 6px;color:var(--navy);}
+  .card p{font-size:13px;color:var(--muted);margin:0;line-height:1.55;}
+
+  .bg-alt{background:var(--paper);}
+  .cta-band{background:linear-gradient(120deg,var(--teal),var(--teal-2));color:#fff;border-radius:20px;padding:36px 30px;text-align:center;}
+  .cta-band h3{font-size:20px;margin:0 0 8px;} .cta-band p{color:#EAFBF6;font-size:13.5px;margin:0 0 18px;}
+
+  .guarantee-badge{display:inline-flex;align-items:center;gap:8px;background:#FFF6E5;color:#8A5A00;padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:700;}
+
+  .faq-item{border-bottom:1px solid #EEF2F8;padding:14px 0;cursor:pointer;}
+  .faq-q{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:14px;color:var(--navy);}
+  .faq-a{font-size:13px;color:var(--muted);margin-top:8px;display:none;line-height:1.6;}
+  .faq-item.open .faq-a{display:block;}
+  .faq-item.open .faq-q i{transform:rotate(45deg);}
+  .faq-q i{transition:transform .2s;}
+
+  footer{background:var(--navy);color:#B9C7DA;padding:44px 0 24px;font-size:13px;}
+  footer h4{color:#fff;font-size:13.5px;margin:0 0 12px;}
+  footer a{color:#B9C7DA;} footer a:hover{color:#fff;}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:24px;margin-bottom:28px;}
+  @media(max-width:760px){ .foot-grid{grid-template-columns:1fr 1fr;} }
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:18px;font-size:12px;color:#7F97B3;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+  .devices-row{display:flex;justify-content:center;gap:30px;flex-wrap:wrap;margin-top:20px;}
+  .device-pill{background:#fff;border:1px solid #EEF2F8;border-radius:14px;padding:16px 22px;text-align:center;box-shadow:0 2px 10px rgba(20,40,70,.05);}
+  .device-pill i{font-size:24px;color:var(--teal-2);}
+  .device-pill div{font-size:12.5px;font-weight:700;color:var(--navy);margin-top:6px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container navwrap">
+    <div class="brand"><div class="mark" id="brandMark">OKV</div><img id="brandLogoImg" style="display:none;width:34px;height:34px;border-radius:9px;object-fit:cover;" alt="Logo"> <span class="brand-name">OKV SACCO</span></div>
+    <nav class="links">
+      <a href="#about">About</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#features">Features</a>
+      <a href="#cross-platform">Cross-Platform</a>
+      <a href="#why-us">Why Choose Us</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="navcta">
+      <a class="btn btn-outline" href="demo.html" style="padding:9px 16px;">View Live Demo</a>
+      <a class="btn btn-primary" href="pricing.html" style="padding:9px 16px;">Start 7-Day Free Trial</a>
+      <button class="hamburger-btn" onclick="document.getElementById('mobileNav').classList.toggle('open')"><i class="bi bi-list"></i></button>
+    </div>
+  </div>
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="#about" onclick="closeMobileNav()">About</a>
+    <a href="#how-it-works" onclick="closeMobileNav()">How It Works</a>
+    <a href="#features" onclick="closeMobileNav()">Features</a>
+    <a href="#cross-platform" onclick="closeMobileNav()">Cross-Platform</a>
+    <a href="#why-us" onclick="closeMobileNav()">Why Choose Us</a>
+    <a href="#faq" onclick="closeMobileNav()">FAQ</a>
+    <div class="navcta">
+      <a class="btn btn-outline" href="demo.html">View Live Demo</a>
+      <a class="btn btn-primary" href="pricing.html">Start 7-Day Free Trial</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Run your SACCO from <span>anywhere</span> —<br>online or completely offline.</h1>
+    <p class="lead">Members, contributions, loans, repayments and dividends — one system your whole team can use on laptop, tablet or phone, synced automatically the moment you're back online.</p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="pricing.html"><i class="bi bi-rocket-takeoff"></i> Start 7-Day Free Trial</a>
+      <a class="btn btn-outline" href="demo.html"><i class="bi bi-play-circle"></i> View Live Demo</a>
+    </div>
+    <div class="trust"><i class="bi bi-shield-check"></i>30-Day Money-Back Guarantee &nbsp;•&nbsp; <i class="bi bi-credit-card-2-front"></i>No card required to start your trial</div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="section-tag">About the System</div>
+    <h2 class="section-title">Built specifically for Savings &amp; Credit Cooperatives</h2>
+    <p class="section-sub">OKV SACCO Subscribe replaces scattered notebooks and spreadsheets with one organized system — every member's savings, shares, loans, repayments and dividends recorded accurately and available to the right staff, instantly.</p>
+    <div class="grid grid-2">
+      <div class="card"><i class="bi bi-people-fill big"></i><h3>Full Member Lifecycle</h3><p>From registration to statements — track every member's savings, shares, loans and dividend history in one place.</p></div>
+      <div class="card"><i class="bi bi-diagram-3-fill big"></i><h3>Built for Teams, Not Just Owners</h3><p>Give your Membership Officer, Loan Officer, Cashier and Accountant their own logins — each sees exactly what their role needs.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="bg-alt">
+  <div class="container">
+    <div class="section-tag">How It Works</div>
+    <h2 class="section-title">Works fully offline. Syncs the moment you're online.</h2>
+    <p class="section-sub">No more "network is down, come back tomorrow." Your staff keep recording transactions with or without a connection.</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <i class="bi bi-wifi-off big"></i>
+        <h3>Offline First</h3>
+        <p>Every entry is saved instantly to the device it was entered on. No internet? No problem — nothing is lost and nothing waits.</p>
+      </div>
+      <div class="card">
+        <i class="bi bi-cloud-arrow-up-fill big"></i>
+        <h3>Automatic Sync</h3>
+        <p>The moment a connection returns, records sync automatically in the background — or tap "Sync Now" for an instant push. Your whole team stays on the same numbers.</p>
+      </div>
+    </div>
+    <div class="devices-row">
+      <div class="device-pill"><i class="bi bi-laptop"></i><div>Laptop</div></div>
+      <div class="device-pill"><i class="bi bi-tablet"></i><div>Tablet</div></div>
+      <div class="device-pill"><i class="bi bi-phone"></i><div>Mobile</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-tag">Features</div>
+    <h2 class="section-title">Everything your SACCO's daily operations need</h2>
+    <div class="grid grid-3">
+      <div class="card"><i class="bi bi-person-vcard big"></i><h3>Member Register</h3><p>Register, search and manage member profiles with status tracking.</p></div>
+      <div class="card"><i class="bi bi-piggy-bank big"></i><h3>Contributions</h3><p>Record savings and share contributions with method &amp; reference tracking.</p></div>
+      <div class="card"><i class="bi bi-cash-coin big"></i><h3>Loans</h3><p>Disburse loans with rate, term and purpose — full loan-to-member linkage.</p></div>
+      <div class="card"><i class="bi bi-receipt big"></i><h3>Repayments</h3><p>Log repayments against any loan with instant receipt referencing.</p></div>
+      <div class="card"><i class="bi bi-graph-up-arrow big"></i><h3>Dividends</h3><p>Calculate and record annual dividend payouts per member shareholding.</p></div>
+      <div class="card"><i class="bi bi-person-badge big"></i><h3>Role-Based Access</h3><p>Assign one or more roles per staff member — Loan Officer, Cashier, Accountant, Auditor and more.</p></div>
+      <div class="card"><i class="bi bi-shield-lock big"></i><h3>Organization Isolation</h3><p>Your data is fully separated from every other organization on the platform.</p></div>
+      <div class="card"><i class="bi bi-arrow-repeat big"></i><h3>Auto &amp; Manual Sync</h3><p>Background sync with notifications, plus a one-tap manual sync whenever you want.</p></div>
+      <div class="card"><i class="bi bi-box-arrow-in-down big"></i><h3>Install Like an App</h3><p>No app store needed — install straight from the browser on any device.</p></div>
+      <div class="card"><i class="bi bi-megaphone big"></i><h3>Member Communication</h3><p>Send announcements or personalized statements to one member or all of them at once — by Email, SMS or WhatsApp.</p></div>
+      <div class="card"><i class="bi bi-book big"></i><h3>Built-In User Manual</h3><p>Downloadable guides tailored to each staff member's role and your plan, right inside the dashboard.</p></div>
+      <div class="card"><i class="bi bi-bank big"></i><h3>Simple Bank-Transfer Upgrades</h3><p>Submit your payment proof from the dashboard — you're confirmed and upgraded automatically, no card required.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CROSS PLATFORM -->
+<section id="cross-platform" class="bg-alt">
+  <div class="container">
+    <div class="section-tag">Cross-Platform Accessibility</div>
+    <h2 class="section-title">One system. Every device your team already owns.</h2>
+    <p class="section-sub">OKV SACCO Subscribe installs directly from the browser as a Progressive Web App — a real, icon-on-your-home-screen app, with no app store, no per-device license fee, and no separate version to maintain.</p>
+    <div class="grid grid-3">
+      <div class="card"><i class="bi bi-android2 big"></i><h3>Android</h3><p>Install via Chrome in one tap — works on any Android phone or tablet.</p></div>
+      <div class="card"><i class="bi bi-apple big"></i><h3>iPhone &amp; iPad</h3><p>Add to Home Screen from Safari — opens full-screen like any other app.</p></div>
+      <div class="card"><i class="bi bi-windows big"></i><h3>Windows &amp; Mac</h3><p>Install from Chrome or Edge — runs in its own window from your Start Menu or Dock.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY CHOOSE US -->
+<section id="why-us">
+  <div class="container">
+    <div class="section-tag">Why Choose OKV SACCO</div>
+    <h2 class="section-title">Built by people who understand cooperative operations</h2>
+    <div class="grid grid-2">
+      <div class="card"><i class="bi bi-award big"></i><h3>Purpose-Built, Not Generic</h3><p>Designed specifically around how SACCOs actually operate — not a repurposed generic spreadsheet template.</p></div>
+      <div class="card"><i class="bi bi-headset big"></i><h3>Real Support</h3><p>Reach a real person by WhatsApp, phone or email when you need help — not a ticket queue.</p></div>
+      <div class="card"><i class="bi bi-graph-up big"></i><h3>Grows With You</h3><p>Start small with the Basic plan and move to Professional as your membership and staff grow.</p></div>
+      <div class="card"><i class="bi bi-shield-check big"></i><h3>Risk-Free to Try</h3><p>7 days free, then a full 30-day money-back guarantee on your first paid plan.</p></div>
+    </div>
+
+    <div class="cta-band mt-4" style="margin-top:34px;">
+      <h3>Ready to modernize your SACCO's record-keeping?</h3>
+      <p>Start your 7-day free trial today — no card required.</p>
+      <a class="btn btn-navy" href="pricing.html">See Plans &amp; Start Free Trial</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="bg-alt">
+  <div class="container" style="max-width:760px;">
+    <div class="section-tag">Questions &amp; Answers</div>
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div id="faqList">
+      <div class="faq-item">
+        <div class="faq-q">Do I need internet to use the app? <i class="bi bi-plus-lg"></i></div>
+        <div class="faq-a">No. Every register works fully offline. Anything you add, edit or delete is saved on your device immediately and syncs automatically once you're back online.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can my staff use it on their own phones? <i class="bi bi-plus-lg"></i></div>
+        <div class="faq-a">Yes — each staff member gets their own login and role, and can install the app on any Android phone, iPhone, tablet, or computer.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What happens after my 7-day free trial ends? <i class="bi bi-plus-lg"></i></div>
+        <div class="faq-a">You'll see a countdown and an Upgrade prompt right on your dashboard before it ends. Choose a plan on the Pricing page to keep going without losing any data.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is my organization's data visible to other SACCOs on the platform? <i class="bi bi-plus-lg"></i></div>
+        <div class="faq-a">No. Every organization's data is fully isolated — no organization can ever see another's records.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What's the difference between the Basic and Professional plans? <i class="bi bi-plus-lg"></i></div>
+        <div class="faq-a">Basic suits small, single-branch cooperatives with a couple of staff logins. Professional removes the member/staff limits and adds priority support and data export — see the Pricing page for full details.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if I'm not satisfied after subscribing? <i class="bi bi-plus-lg"></i></div>
+        <div class="faq-a">You're covered by our 30-day money-back guarantee on your first paid subscription — reach out and we'll refund you, no long explanations needed.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I message my members directly from the system? <i class="bi bi-plus-lg"></i></div>
+        <div class="faq-a">Yes — Admins and assigned staff (Managers, Membership and Finance Officers) can send announcements or personalized statements to one member or all of them at once, by Email, SMS or WhatsApp.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How do I upgrade or renew my subscription? <i class="bi bi-plus-lg"></i></div>
+        <div class="faq-a">From your dashboard's Subscription tab, choose your plan and pay by bank transfer, then upload your payment screenshot. We're notified immediately, and you'll get a status email within the hour — once confirmed, your plan updates automatically with your new renewal date.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="cta-band">
+      <div class="guarantee-badge" style="background:rgba(255,255,255,.18);color:#fff;margin-bottom:14px;"><i class="bi bi-patch-check-fill"></i> 30-Day Money-Back Guarantee</div>
+      <h3>Try OKV SACCO Subscribe free for 7 days</h3>
+      <p>Set up your organization in minutes — no card required to start.</p>
+      <a class="btn btn-navy" href="pricing.html">Start Free Trial</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>OKV SACCO Subscribe</h4>
+        <p style="max-width:280px;color:#8FB4D6;">Online multi-user SACCO management, built to work whether you're connected or not.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <p><a href="#features">Features</a></p>
+        <p><a href="pricing.html">Pricing</a></p>
+        <p><a href="demo.html">Live Demo</a></p>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <p><a href="#about">About</a></p>
+        <p><a href="#why-us">Why Choose Us</a></p>
+        <p><a href="#faq">FAQ</a></p>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <p><a href="privacy-policy.html">Privacy Policy</a></p>
+        <p><a href="terms-of-service.html">Terms of Service</a></p>
+        <p><a href="refund-policy.html">Refund Policy</a></p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p id="footWhatsapp"></p>
+        <p id="footPhone"></p>
+        <p id="footEmail"></p>
+        <p id="footWebsite"></p>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> OKV Technology Consults. All rights reserved.</span>
+      <span>Developed by OKV Technology Consults</span>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+  loadPlatformSettings().then(()=>{
+    document.getElementById("footWhatsapp").innerHTML = '<i class="bi bi-whatsapp"></i> ' + CONTACT_INFO.whatsapp;
+    document.getElementById("footPhone").innerHTML = '<i class="bi bi-telephone"></i> ' + CONTACT_INFO.phone;
+    document.getElementById("footEmail").innerHTML = '<i class="bi bi-envelope"></i> ' + CONTACT_INFO.email;
+    document.getElementById("footWebsite").innerHTML = '<i class="bi bi-globe"></i> ' + CONTACT_INFO.website;
+    applyBranding();
+  });
+
+  document.querySelectorAll(".faq-item").forEach(item=>{
+    item.addEventListener("click", ()=>{
+      const wasOpen = item.classList.contains("open");
+      document.querySelectorAll(".faq-item").forEach(i=> i.classList.remove("open"));
+      if(!wasOpen) item.classList.add("open");
+    });
+  });
+
+  function closeMobileNav(){ document.getElementById("mobileNav").classList.remove("open"); }
+</script>
+</body>
+</html>
