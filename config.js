@@ -1,6 +1,6 @@
 /* OKV SACCO — Subscribe (Online) — shared configuration.
    Paste your deployed Apps Script Web App URL below (ends in /exec). */
-const API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const API_URL = "https://script.google.com/macros/s/AKfycbxMnK17Pd6YHJQ0oaq-KjlkoW3QaQ98JvSrYFzn8tqsMK4XuTkVg9Ts9GRvJjpIIzQb/exec";
 
 /* Calls the backend. Uses no explicit Content-Type header so the browser
    sends it as text/plain — this avoids a CORS preflight request, which
